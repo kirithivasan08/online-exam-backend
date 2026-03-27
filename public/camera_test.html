@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Camera Diagnostic</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+
+        .error {
+            color: red;
+            background: #fee;
+            padding: 10px;
+            border: 1px solid red;
+            margin: 10px 0;
+        }
+
+        .success {
+            color: green;
+            background: #efe;
+            padding: 10px;
+            border: 1px solid green;
+            margin: 10px 0;
+        }
+
+        video {
+            width: 320px;
+            height: 240px;
+            background: #ccc;
+            transform: scaleX(-1);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Camera Diagnostic Tool 📷</h1>
+    <p>This page tests if your browser can see your laptop camera.</p>
+
+    <button onclick="testCamera()">Test Camera Now</button>
+    <button onclick="listDevices()">List All Devices</button>
+
+    <div id="status"></div>
+    <video id="video" autoplay playsinline></video>
+    <pre id="logs" style="background:#eee; padding:10px; margin-top:20px;"></pre>
+
+    <script>
+        function log(msg) {
+            const p = document.createElement('div');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            document.getElementById('logs').prepend(p);
+        }
+
+        async function listDevices() {
+            log("Listing devices...");
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                log(`Found ${devices.length} devices.`);
+                devices.forEach(d => {
+                    log(`- ${d.kind}: ${d.label || 'Unknown Name'} (ID: ${d.deviceId.substr(0, 8)}...)`);
+                });
+            } catch (err) {
+                log("Error listing devices: " + err.message);
+            }
+        }
+
+        async function testCamera() {
+            const status = document.getElementById('status');
+            status.innerHTML = "Requesting access...";
+            log("Requesting getUserMedia({ video: true })...");
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                log("Success! Camera stream obtained.");
+
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+
+                status.innerHTML = '<div class="success">✅ Camera is working! You should see yourself below.</div>';
+
+                const track = stream.getVideoTracks()[0];
+                log(`Track Label: ${track.label}`);
+                log(`Track State: ${track.readyState}`);
+
+            } catch (err) {
+                console.error(err);
+                log(`ERROR: ${err.name} - ${err.message}`);
+                status.innerHTML = `<div class="error">❌ <strong>${err.name}</strong>: ${err.message}</div>`;
+
+                if (err.name === 'NotFoundError') {
+                    status.innerHTML += `<p>The browser cannot find any camera. Check: <br>1. Is it disabled by a function key (F8, F10)? <br>2. Windows Privacy Settings.</p>`;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Teacher Registration</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+        rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div style="position: absolute; top: 1rem; right: 2rem;">
+        <label class="toggle-switch">
+            <input type="checkbox" class="toggle-input theme-toggle-input">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label text-sm" style="color: var(--text)">Dark Mode</span>
+        </label>
+    </div>
+    <div class="auth-container card">
+        <h2 class="text-center mb-4">Register as Teacher</h2>
+
+        <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="name" placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="email" placeholder="teacher@school.com">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" placeholder="********">
+        </div>
+
+        <button class="btn btn-primary w-full mb-4" onclick="register()">Register</button>
+
+        <div class="text-center text-sm">
+            Already have an account? <a href="teacher-login.html">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        async function register() {
+            const name = document.getElementById("name").value;
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (!name || !email || !password) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/teacher/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert(data.message || "Registration successful! Please check your email to verify your account.");
+                    window.location.href = "teacher-login.html";
+                } else {
+                    alert(data.message || "Registration failed");
+                }
+            } catch (err) {
+                alert("Network error");
+            }
+        }
+    </script>
+</body>
+
+</html>

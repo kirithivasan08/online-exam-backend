@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Online Exam System - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+        rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+
+<body class="bg-gray-50 flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">Online Exam System</div>
+            <div class="nav-links items-center">
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label text-sm">Dark Mode</span>
+                </label>
+                <a href="login.html" class="btn btn-primary theme-student">Student Login</a>
+                <a href="teacher-login.html" class="btn btn-primary theme-teacher">Teacher Portal</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="container flex-grow flex items-center justify-center py-12">
+        <div class="w-full max-w-4xl text-center">
+            <h1 class="text-5xl font-bold mb-6 text-slate-900">
+                Seamless Examinations, <br>
+                <span style="color: var(--primary)">Powerful Results</span>
+            </h1>
+            <p class="text-xl text-muted mb-12 max-w-2xl mx-auto">
+                A complete solution for conducting secure online exams, tracking student progress, and managing
+                educational assessments with ease.
+            </p>
+
+            <div class="grid grid-cols-2 gap-8 max-w-2xl mx-auto">
+                <!-- Student Card -->
+                <a href="login.html"
+                    class="card hover:shadow-lg transition transform hover:-translate-y-1 block p-8 text-center no-underline border-2 border-transparent hover:border-indigo-500">
+                    <div
+                        class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                        🧑‍🎓
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">I am a Student</h3>
+                    <p class="text-muted text-sm">
+                        Attempt exams, track your progress, and view instant results.
+                    </p>
+                    <button class="btn btn-primary mt-4 w-full theme-student">Student Login</button>
+                    <div class="mt-2 text-sm text-indigo-600">Register New Account →</div>
+                </a>
+
+                <!-- Teacher Card -->
+                <a href="teacher.html"
+                    class="card hover:shadow-lg transition transform hover:-translate-y-1 block p-8 text-center no-underline border-2 border-transparent hover:border-indigo-500">
+                    <div
+                        class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                        👨‍🏫
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">I am a Teacher</h3>
+                    <p class="text-muted text-sm">
+                        Create exams, manage questions, and evaluate student performance.
+                    </p>
+                    <button class="btn btn-primary mt-4 w-full theme-teacher">Teacher Portal</button>
+                    <div class="mt-2 text-sm text-emerald-600">Admin Dashboard →</div>
+                </a>
+            </div>
+
+            <div class="mt-16 grid grid-cols-3 gap-8 text-left">
+                <div class="card p-6">
+                    <h4 class="font-bold mb-2 text-lg">⚡️ Instant Results</h4>
+                    <p class="text-sm text-muted">Auto-grading for objective questions delivers immediate feedback to
+                        students.</p>
+                </div>
+                <div class="card p-6">
+                    <h4 class="font-bold mb-2 text-lg">⏱ Timed Exams</h4>
+                    <p class="text-sm text-muted">Strict duration controls ensure fair testing conditions for everyone.
+                    </p>
+                </div>
+                <div class="card p-6">
+                    <h4 class="font-bold mb-2 text-lg">📊 Detailed Analytics</h4>
+                    <p class="text-sm text-muted">Comprehensive reports help identify strengths and areas for
+                        improvement.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t py-8 mt-auto">
+        <div class="container text-center text-muted text-sm">
+            &copy; 2026 Online Exam System. All rights reserved.
+        </div>
+    </footer>
+
+    <style>
+        .hover\:shadow-lg:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .transform {
+            transform: translateZ(0);
+        }
+
+        .hover\:-translate-y-1:hover {
+            transform: translateY(-0.25rem);
+        }
+
+        .hover\:border-indigo-500:hover {
+            border-color: var(--primary);
+        }
+
+        .btn-success {
+            background-color: #10b981;
+            color: white;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+        }
+
+        .no-underline {
+            text-decoration: none !important;
+        }
+
+        .text-slate-900 {
+            color: #0f172a;
+        }
+
+        .bg-indigo-100 {
+            background-color: #e0e7ff;
+        }
+
+        .bg-emerald-100 {
+            background-color: #d1fae5;
+        }
+
+        .text-emerald-600 {
+            color: #059669;
+        }
+
+        .text-indigo-600 {
+            color: #4f46e5;
+        }
+
+        .min-h-screen {
+            min-height: 100vh;
+        }
+
+        .flex-grow {
+            flex-grow: 1;
+        }
+
+        .py-12 {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+    </style>
+</body>
+
+</html>

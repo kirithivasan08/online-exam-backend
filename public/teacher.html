@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+        rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+
+<body class="bg-gray-50 theme-teacher">
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">Teacher Portal</div>
+            <div class="nav-links items-center">
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label text-sm">Dark Mode</span>
+                </label>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Dashboard Tabs -->
+        <div class="dashboard-tabs">
+            <button class="tab-btn active" id="tab-list" onclick="showSection('list')">Manage Exams</button>
+            <button class="tab-btn" id="tab-create" onclick="showSection('create')">Create New Exam</button>
+        </div>
+
+        <!-- Manage Exams Section -->
+        <div id="listSection">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="m-0 text-2xl">Available Exams</h2>
+            </div>
+            <div id="examList" class="exam-grid">
+                <!-- Exams loaded here -->
+            </div>
+        </div>
+
+        <!-- Create Exam Section -->
+        <div id="createSection" style="display:none;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="formTitle" class="m-0 text-2xl">Create New Exam</h2>
+                    <button id="cancelBtn" class="btn btn-secondary btn-sm" style="display:none"
+                        onclick="showSection('list')">Cancel Revision</button>
+                </div>
+                <div class="form-section-card">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        General Information
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group mb-0">
+                            <label class="form-label">Exam Title</label>
+                            <input id="title" class="form-input" placeholder="e.g. Final Mathematics">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="form-label">Subject</label>
+                            <input id="subject" class="form-input" placeholder="e.g. Math">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section-card">
+                    <h3>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Grading & Rules
+                    </h3>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="form-group mb-0">
+                            <label class="form-label">Duration (minutes)</label>
+                            <input type="number" id="duration" class="form-input" placeholder="e.g. 60">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="form-label">Passing Marks</label>
+                            <input type="number" id="passMarks" class="form-input" placeholder="e.g. 40">
+                        </div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="randomizeQuestions" class="toggle-input">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-label text-sm font-medium">Randomize Question Order for Students</span>
+                    </label>
+                </div>
+
+                <div class="form-section-card border-l-4 border-l-indigo-500">
+                    <div class="flex items-start gap-3">
+                        <div class="mt-1 text-indigo-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <label class="toggle-switch mb-2">
+                                <input type="checkbox" id="enableAntiCheating" class="toggle-input"
+                                    onchange="document.getElementById('antiCheatingOptions').style.display = this.checked ? 'block' : 'none'">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-label font-bold">Enable Anti-Cheating Monitor</span>
+                            </label>
+
+                            <div id="antiCheatingOptions" style="display:none; margin-top:0.75rem;">
+                                <label class="form-label text-sm">Max Warnings before Auto-Submit</label>
+                                <input type="number" id="maxWarnings" class="form-input" value="3" min="1" max="10"
+                                    style="width: 120px;">
+                                <p class="text-muted text-xs mt-2">Students will be warned if they switch tabs. Exam
+                                    auto-submits if limit exceeded.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section-card border-l-4 border-l-orange-500 mt-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="mb-0 border-0 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            Assign Exam To
+                        </h3>
+                    </div>
+
+                    <div class="flex gap-4 mb-4">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="assignType" value="all" checked
+                                onchange="toggleStudentSelection(false)">
+                            <span class="font-medium">All Students (Public)</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="radio" name="assignType" value="selected"
+                                onchange="toggleStudentSelection(true)">
+                            <span class="font-medium">Selected Students Only</span>
+                        </label>
+                    </div>
+
+                    <div id="studentSelectionArea" style="display: none;">
+                        <input type="text" id="studentSearch" class="form-input mb-3"
+                            placeholder="Search students by name or roll number..." onkeyup="filterStudents()">
+                        <div id="studentChecklist" class="border rounded p-3"
+                            style="max-height: 200px; overflow-y: auto; background: var(--background);">
+                            <div class="text-muted text-sm italic">Loading students...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section-card">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="mb-0 border-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            Questions
+                        </h3>
+                        <button class="btn btn-secondary btn-sm" onclick="addQuestionUI()">+ Add Question</button>
+                    </div>
+                    <div id="questionsContainer" class="flex flex-col gap-4"></div>
+                </div>
+
+                <div class="flex justify-end mt-8 mb-8">
+                    <button id="submitBtn" class="btn btn-primary btn-lg" onclick="createExam()">Publish Exam</button>
+                </div>
+                <div id="msg" class="alert mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div id="resultsSection" style="display:none;">
+        <div class="card" style="max-width: 1000px; margin: 0 auto;">
+            <div class="flex justify-between items-start mb-6 border-b pb-4 dark:border-zinc-700">
+                <div>
+                    <h2 id="resultsTitle" class="m-0 text-2xl flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-indigo-500">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Exam Results
+                    </h2>
+                    <p class="text-sm text-muted mt-1">View student scores and export analytical reports.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="showSection('list')">Return to Dashboard</button>
+            </div>
+
+            <div class="flex gap-3 mb-6">
+                <button class="btn btn-success btn-sm flex items-center gap-1" onclick="exportToExcel()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <path d="M8 13h2"></path>
+                        <path d="M14 13h2"></path>
+                        <path d="M10 17l4-8"></path>
+                    </svg>
+                    Export Excel
+                </button>
+                <button class="btn btn-danger btn-sm flex items-center gap-1" onclick="exportToPDF()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <path d="M12 18v-6"></path>
+                        <path d="M9 15l3 3 3-3"></path>
+                    </svg>
+                    Export PDF
+                </button>
+                <button class="btn btn-ghost text-danger btn-sm ml-auto flex items-center gap-1"
+                    onclick="deleteAllResults()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Wipe Data
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table class="custom-table" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Roll Number</th>
+                            <th>Score</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- Rows loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Snapshot Modal -->
+    <div id="snapshotModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center;">
+        <div class="card" style="max-width:800px; width:90%; max-height:90vh; overflow-y:auto;">
+            <div class="flex justify-between items-center mb-4">
+                <h3>Proctoring Logs</h3>
+                <button class="btn btn-secondary btn-sm"
+                    onclick="document.getElementById('snapshotModal').style.display='none'">Close</button>
+            </div>
+            <div id="snapshotGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Snapshots loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluation Modal -->
+    <div id="evalModal"
+        style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100; align-items:center; justify-content:center;">
+        <div class="card" style="max-width:600px; width:90%; max-height:90vh; overflow-y:auto;">
+            <div class="flex justify-between items-center mb-4">
+                <h3>Evaluate Attempt</h3>
+                <button class="btn btn-secondary btn-sm"
+                    onclick="document.getElementById('evalModal').style.display='none'">Close</button>
+            </div>
+            <div id="evalContent" class="mb-4">
+                <!-- Question & Answer content loaded here -->
+            </div>
+            <div class="flex items-center gap-4 border-t pt-4">
+                <div class="flex-1">
+                    <label class="form-label">Total Marks Awarded</label>
+                    <input type="number" id="evalTotalMarks" class="form-input">
+                </div>
+                <button class="btn btn-primary mt-6" onclick="saveMarks()">Save Result</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <script>
+        const teacherId = localStorage.getItem("teacherId");
+        if (!teacherId) {
+            window.location.href = "teacher-login.html";
+        }
+
+        let questions = [];
+        let currentExamId = null;
+        let currentExamTitle = null;
+
+        // --- Assign Students Logic ---
+        let allStudents = [];
+        let selectedStudentIds = new Set();
+
+        async function loadAllStudents() {
+            try {
+                const res = await fetch('/api/student/all');
+                allStudents = await res.json();
+                if (!Array.isArray(allStudents)) allStudents = [];
+                console.log("Loaded Students for Assigment Payload: ", allStudents);
+                renderStudentChecklist(allStudents);
+            } catch (err) {
+                console.error("Student Fetch Error", err);
+                document.getElementById('studentChecklist').innerHTML = '<span class="text-danger">Failed to load students. Check console.</span>';
+            }
+        }
+
+        function toggleStudentSelection(show) {
+            document.getElementById('studentSelectionArea').style.display = show ? 'block' : 'none';
+        }
+
+        function renderStudentChecklist(students) {
+            const list = document.getElementById('studentChecklist');
+            list.innerHTML = '';
+
+            if (!students || students.length === 0) {
+                list.innerHTML = '<div class="text-muted text-sm italic">No students found.</div>';
+                return;
+            }
+
+            const grouped = {};
+            students.forEach(s => {
+                const dept = s.department || 'Other';
+                const year = s.year || 'Unknown Year';
+                if (!grouped[dept]) grouped[dept] = {};
+                if (!grouped[dept][year]) grouped[dept][year] = [];
+                grouped[dept][year].push(s);
+            });
+
+            // Iterate Departments
+            Object.keys(grouped).sort().forEach(dept => {
+                const deptData = grouped[dept];
+                const deptId = `dept_${dept.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+                let totalStudentsInDept = 0;
+                Object.values(deptData).forEach(arr => totalStudentsInDept += arr.length);
+
+                // Department Header
+                const deptHeader = document.createElement('div');
+                deptHeader.className = "flex items-center gap-3 p-3 rounded-md mt-4 mb-2 select-none cursor-pointer transition-all border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800";
+                deptHeader.style.backgroundColor = "var(--primary-light)";
+                deptHeader.style.color = "var(--primary-hover)";
+                deptHeader.style.borderLeft = "4px solid var(--primary)";
+                deptHeader.innerHTML = `
+                    <div class="flex items-center gap-3 flex-1" onclick="toggleVisibility('${deptId}')">
+                        <svg id="icon_${deptId}" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s; transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        <span class="font-bold text-base tracking-wide">${dept}</span>
+                        <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-white/50 dark:bg-black/20 text-indigo-700 dark:text-indigo-300 ml-1">${totalStudentsInDept}</span>
+                    </div>
+                    <div class="flex items-center gap-2 px-2" onclick="event.stopPropagation()">
+                        <input type="checkbox" id="chkall_${deptId}" class="accent-indigo-600 w-4 h-4 rounded border-gray-300 focus:ring-indigo-500 dept-master-cb" data-dept-id="${deptId}" onchange="toggleDeptSelection('${deptId}', this.checked)">
+                        <label for="chkall_${deptId}" class="cursor-pointer text-sm font-medium opacity-90 hover:opacity-100">Select All</label>
+                    </div>
+                `;
+                list.appendChild(deptHeader);
+
+                // Department Container (Hidden by default)
+                const deptContainer = document.createElement('div');
+                deptContainer.className = "flex flex-col gap-2";
+                deptContainer.style.paddingLeft = "24px";
+                deptContainer.style.marginLeft = "12px";
+                deptContainer.style.borderLeft = "2px dashed var(--border)";
+                deptContainer.style.display = "none";
+                deptContainer.id = deptId;
+
+                // Iterate Years within Department
+                Object.keys(deptData).sort().forEach(year => {
+                    const groupStudents = deptData[year];
+                    const yearId = `${deptId}_year_${year.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+                    // Year Header
+                    const yearHeader = document.createElement('div');
+                    yearHeader.className = "flex items-center gap-2 p-2.5 rounded-md mt-2 mb-1 text-sm select-none cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-all";
+                    yearHeader.style.backgroundColor = "var(--surface)";
+                    yearHeader.style.border = "1px solid var(--border)";
+                    yearHeader.style.marginLeft = "8px"; // Add some left margin to pull it away from the tree line
+                    yearHeader.innerHTML = `
+                        <div class="flex items-center gap-2 flex-1" onclick="toggleVisibility('${yearId}')">
+                            <svg id="icon_${yearId}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.2s; color: var(--text-muted); transform: rotate(-90deg);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <span class="font-medium text-muted">${year}</span>
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 ml-1">${groupStudents.length}</span>
+                        </div>
+                        <div class="flex items-center gap-2 px-2" onclick="event.stopPropagation()">
+                            <input type="checkbox" id="chkall_${yearId}" class="accent-indigo-600 w-3.5 h-3.5 rounded border-gray-300 text-indigo-600 year-master-cb" data-year-id="${yearId}" data-parent-dept="${deptId}" onchange="toggleYearSelection('${yearId}', this.checked, '${deptId}')">
+                            <label for="chkall_${yearId}" class="cursor-pointer text-xs font-medium text-muted hover:text-gray-900 dark:hover:text-white transition-colors">Select Year</label>
+                        </div>
+                    `;
+                    deptContainer.appendChild(yearHeader);
+
+                    // Year Container (Hidden by default)
+                    const yearContainer = document.createElement('div');
+                    yearContainer.className = "flex flex-col gap-1 year-container";
+                    yearContainer.style.paddingLeft = "24px";
+                    yearContainer.style.marginLeft = "18px";
+                    yearContainer.style.borderLeft = "2px dashed var(--border)";
+                    yearContainer.style.display = "none";
+                    yearContainer.id = yearId;
+
+                    groupStudents.forEach(student => {
+                        const div = document.createElement('div');
+                        div.className = "student-assign-row flex items-center p-2.5 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer group";
+                        div.style.marginLeft = "8px";
+
+                        // We put an invisible bottom border so the rows don't shift when they get the left border on hover
+                        div.style.borderLeft = "3px solid transparent";
+
+                        const isChecked = selectedStudentIds.has(student._id);
+
+                        div.innerHTML = `
+                            <div class="flex items-center px-1">
+                                <input type="checkbox" id="chk_${student._id}" value="${student._id}" ${isChecked ? 'checked' : ''} 
+                                    data-parent-year="${yearId}" data-parent-dept="${deptId}"
+                                    onchange="updateSelectedStudents(this); checkMasterStates('${yearId}', '${deptId}')" class="accent-indigo-600 w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 student-cb mr-3">
+                            </div>
+                            <label for="chk_${student._id}" class="flex flex-col flex-1 cursor-pointer">
+                                <span class="student-name text-sm font-semibold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">${student.name}</span>
+                                <span class="student-detail text-xs text-muted flex items-center gap-2 mt-0.5">
+                                    <span class="bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider">${student.rollNumber}</span>
+                                    <span>${student.email}</span>
+                                </span>
+                            </label>
+                        `;
+                        yearContainer.appendChild(div);
+                    });
+
+                    deptContainer.appendChild(yearContainer);
+                });
+
+                list.appendChild(deptContainer);
+
+                // Set initial master checkbox states for this department after rendering
+                checkMasterStates(null, deptId);
+            });
+        }
+
+        function toggleVisibility(containerId) {
+            const container = document.getElementById(containerId);
+            const icon = document.getElementById(`icon_${containerId}`);
+            if (!container || !icon) return;
+
+            if (container.style.display === 'none') {
+                container.style.display = 'flex';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                container.style.display = 'none';
+                icon.style.transform = 'rotate(-90deg)';
+            }
+        }
+
+        function toggleDeptSelection(deptId, isChecked) {
+            const container = document.getElementById(deptId);
+            if (!container) return;
+
+            // Check all year masters
+            const yearMasters = container.querySelectorAll('.year-master-cb');
+            yearMasters.forEach(cb => cb.checked = isChecked);
+
+            // Check all students
+            const studentCheckboxes = container.querySelectorAll('.student-cb');
+            studentCheckboxes.forEach(cb => {
+                if (cb.checked !== isChecked) {
+                    cb.checked = isChecked;
+                    updateSelectedStudents(cb);
+                }
+            });
+        }
+
+        function toggleYearSelection(yearId, isChecked, deptId) {
+            const container = document.getElementById(yearId);
+            if (!container) return;
+
+            // Check all students in this year
+            const studentCheckboxes = container.querySelectorAll('.student-cb');
+            studentCheckboxes.forEach(cb => {
+                if (cb.checked !== isChecked) {
+                    cb.checked = isChecked;
+                    updateSelectedStudents(cb);
+                }
+            });
+
+            // Update parent department master
+            checkMasterStates(null, deptId);
+        }
+
+        function checkMasterStates(yearId, deptId) {
+            // Check Year Master if yearId provided
+            if (yearId) {
+                const yearContainer = document.getElementById(yearId);
+                const yearMaster = document.getElementById(`chkall_${yearId}`);
+                if (yearContainer && yearMaster) {
+                    const yearStudents = Array.from(yearContainer.querySelectorAll('.student-cb'));
+                    yearMaster.checked = yearStudents.length > 0 && yearStudents.every(cb => cb.checked);
+                }
+            }
+
+            // Check Dept Master
+            if (deptId) {
+                const deptContainer = document.getElementById(deptId);
+                const deptMaster = document.getElementById(`chkall_${deptId}`);
+                if (deptContainer && deptMaster) {
+                    const allDeptStudents = Array.from(deptContainer.querySelectorAll('.student-cb'));
+                    deptMaster.checked = allDeptStudents.length > 0 && allDeptStudents.every(cb => cb.checked);
+
+                    // Also ensure all year masters are updated if checking globally
+                    if (!yearId) {
+                        const yearMasters = deptContainer.querySelectorAll('.year-master-cb');
+                        yearMasters.forEach(ym => {
+                            const yId = ym.getAttribute('data-year-id');
+                            const yCont = document.getElementById(yId);
+                            if (yCont) {
+                                const yStuds = Array.from(yCont.querySelectorAll('.student-cb'));
+                                ym.checked = yStuds.length > 0 && yStuds.every(cb => cb.checked);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        function filterStudents() {
+            const term = document.getElementById('studentSearch').value.toLowerCase();
+            const filtered = allStudents.filter(s =>
+                s.name.toLowerCase().includes(term) ||
+                s.rollNumber.toLowerCase().includes(term) ||
+                s.email.toLowerCase().includes(term)
+            );
+            renderStudentChecklist(filtered);
+        }
+
+        function updateSelectedStudents(checkbox) {
+            if (checkbox.checked) {
+                selectedStudentIds.add(checkbox.value);
+            } else {
+                selectedStudentIds.delete(checkbox.value);
+            }
+        }
+
+        loadAllStudents();
+        // ------------------------------
+
+        async function loadExams() {
+            const res = await fetch("/api/exam/all?teacherId=" + teacherId);
+            const exams = await res.json();
+
+            const list = document.getElementById("examList");
+            list.innerHTML = "";
+
+            exams.forEach(exam => {
+                const div = document.createElement("div");
+                div.className = "exam-card";
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="m-0 text-lg mb-1">${exam.title}</h3>
+                            <span class="badge badge-blue text-xs">${exam.subject}</span>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <label class="toggle-switch m-0" style="transform: scale(0.85);">
+                                <input type="checkbox" class="toggle-input" ${exam.showResults !== false ? 'checked' : ''} onchange="togglePublish('${exam._id}', this.checked, this.parentElement.nextElementSibling)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="text-xs mt-1 ${exam.showResults !== false ? 'text-green-600' : 'text-gray-500'} font-medium">
+                                ${exam.showResults !== false ? 'Published' : 'Hidden'}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-6">
+                        <div class="exam-meta-box">
+                            <span class="text-xs text-muted mb-1">Duration</span>
+                            <span class="font-bold text-sm flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                ${exam.duration}m
+                            </span>
+                        </div>
+                        <div class="exam-meta-box">
+                            <span class="text-xs text-muted mb-1">Questions</span>
+                            <span class="font-bold text-sm flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                ${exam.questions.length || 0}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mt-auto pt-4 border-t dark:border-zinc-700">
+                        <button class="btn btn-secondary btn-sm flex-1" onclick="editExam('${exam._id}')">Edit</button>
+                        <button class="btn btn-primary btn-sm flex-1" onclick="viewResults('${exam._id}', '${exam.title}')">Results</button>
+                        <button class="btn btn-danger btn-sm px-3 tooltip" data-tip="Delete Exam" onclick="deleteExam('${exam._id}')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function showSection(id) {
+            document.getElementById("listSection").style.display = id === 'list' ? 'block' : 'none';
+            document.getElementById("createSection").style.display = id === 'create' ? 'block' : 'none';
+            document.getElementById("resultsSection").style.display = id === 'results' ? 'block' : 'none';
+
+            // Tab active states
+            const tabList = document.getElementById("tab-list");
+            const tabCreate = document.getElementById("tab-create");
+            if (tabList && tabCreate) {
+                if (id === 'list') {
+                    tabList.classList.add('active');
+                    tabCreate.classList.remove('active');
+                } else if (id === 'create') {
+                    tabCreate.classList.add('active');
+                    tabList.classList.remove('active');
+                } else {
+                    tabList.classList.remove('active');
+                    tabCreate.classList.remove('active');
+                }
+            }
+
+            if (id === 'list') {
+                loadExams();
+                resetForm();
+            }
+        }
+
+        function resetForm() {
+            currentExamId = null;
+            document.getElementById("formTitle").innerText = "Create New Exam";
+            document.getElementById("submitBtn").innerText = "Publish Exam";
+            document.getElementById("cancelBtn").style.display = "none";
+
+            document.getElementById("title").value = "";
+            document.getElementById("subject").value = "";
+            document.getElementById("duration").value = "";
+            document.getElementById("passMarks").value = "";
+            document.getElementById("randomizeQuestions").checked = false;
+
+            // Reset Anti-Cheating
+            document.getElementById("enableAntiCheating").checked = false;
+            document.getElementById("maxWarnings").value = 3;
+            document.getElementById("antiCheatingOptions").style.display = "none";
+
+            // Reset Student Assign
+            document.querySelector('input[name="assignType"][value="all"]').checked = true;
+            toggleStudentSelection(false);
+            selectedStudentIds.clear();
+
+            // Uncheck all rendered student checkboxes
+            document.querySelectorAll('#studentChecklist input[type="checkbox"]').forEach(chk => {
+                chk.checked = false;
+            });
+
+            document.getElementById("questionsContainer").innerHTML = "";
+            addQuestionUI();
+        }
+
+        async function editExam(id) {
+            try {
+                const res = await fetch(`/api/exam/${id}`);
+                const exam = await res.json();
+
+                currentExamId = id;
+                showSection('create');
+
+                document.getElementById("formTitle").innerText = "Edit Exam";
+                document.getElementById("submitBtn").innerText = "Update Exam";
+                document.getElementById("cancelBtn").style.display = "inline-block";
+
+                document.getElementById("title").value = exam.title;
+                document.getElementById("subject").value = exam.subject;
+                document.getElementById("duration").value = exam.duration;
+                document.getElementById("passMarks").value = exam.passMarks;
+                document.getElementById("randomizeQuestions").checked = exam.randomizeQuestions || false;
+
+                // Anti-Cheating
+                const acEnabled = exam.enableAntiCheating || false;
+                document.getElementById("enableAntiCheating").checked = acEnabled;
+                document.getElementById("maxWarnings").value = exam.maxWarnings || 3;
+                document.getElementById("antiCheatingOptions").style.display = acEnabled ? "block" : "none";
+
+                // Student Assign Loading
+                selectedStudentIds.clear();
+
+                if (exam.assignedTo && exam.assignedTo.length > 0) {
+                    document.querySelector('input[name="assignType"][value="selected"]').checked = true;
+                    toggleStudentSelection(true);
+                    exam.assignedTo.forEach(id => selectedStudentIds.add(id));
+                } else {
+                    document.querySelector('input[name="assignType"][value="all"]').checked = true;
+                    toggleStudentSelection(false);
+                }
+
+                // Uncheck all rendered student checkboxes and re-check if needed
+                document.querySelectorAll('#studentChecklist input[type="checkbox"]').forEach(chk => {
+                    chk.checked = selectedStudentIds.has(chk.value);
+                });
+
+                const container = document.getElementById("questionsContainer");
+                container.innerHTML = "";
+
+                exam.questions.forEach(q => {
+                    addQuestionUI(q);
+                });
+
+            } catch (err) {
+                alert("Error loading exam details");
+            }
+        }
+
+        function addQuestionUI(data = null) {
+            const container = document.getElementById("questionsContainer");
+            const index = container.children.length;
+
+            const div = document.createElement("div");
+            div.className = "card p-4";
+            div.style.border = "1px solid var(--border)";
+
+            const qText = data ? data.questionText : "";
+            const opt1 = data ? data.options[0] : "";
+            const opt2 = data ? data.options[1] : "";
+            const opt3 = data ? data.options[2] : "";
+            const opt4 = data ? data.options[3] : "";
+            const correct = data ? data.correctAnswer : "";
+            const marks = data ? data.marks : 1;
+
+            div.innerHTML = `
+                <div class="flex justify-between mb-2">
+                    <h4>Question ${index + 1}</h4>
+                    <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.8rem" onclick="this.parentElement.parentElement.remove()">Remove</button>
+                </div>
+                
+                <div class="mb-2">
+                    <label class="text-sm font-medium">Type:</label>
+                    <select class="q-type border p-1 rounded" onchange="toggleQuestionType(this)">
+                        <option value="mcq" ${data && data.type === 'mcq' ? 'selected' : ''}>Multiple Choice</option>
+                        <option value="descriptive" ${data && data.type === 'descriptive' ? 'selected' : ''}>Descriptive (Theory)</option>
+                    </select>
+                </div>
+
+                <input class="mb-2 q-text" placeholder="Question Text" value="${qText}">
+                
+                <div class="mcq-options" style="display: ${data && data.type === 'descriptive' ? 'none' : 'grid'};">
+                    <div class="grid grid-cols-2">
+                        <input class="mb-2 q-opt1" placeholder="Option 1" value="${opt1}">
+                        <input class="mb-2 q-opt2" placeholder="Option 2" value="${opt2}">
+                        <input class="mb-2 q-opt3" placeholder="Option 3" value="${opt3}">
+                        <input class="mb-2 q-opt4" placeholder="Option 4" value="${opt4}">
+                    </div>
+                    <input class="mt-2 q-cor" placeholder="Correct Answer (Exact text)" value="${correct}">
+                </div>
+
+                <input type="number" class="mt-2 q-marks" placeholder="Marks" value="${marks}">
+            `;
+            container.appendChild(div);
+        }
+
+        function toggleQuestionType(select) {
+            const mcqOptions = select.parentElement.parentElement.querySelector('.mcq-options');
+            mcqOptions.style.display = select.value === 'mcq' ? 'grid' : 'none';
+        }
+
+        async function createExam() {
+            const title = document.getElementById("title").value;
+            const subject = document.getElementById("subject").value;
+            const duration = document.getElementById("duration").value;
+            const passMarks = parseInt(document.getElementById("passMarks").value) || 0;
+            const randomizeQuestions = document.getElementById("randomizeQuestions").checked;
+
+            const qDivs = document.querySelectorAll("#questionsContainer > div");
+            const questions = Array.from(qDivs).map(div => {
+                const type = div.querySelector(".q-type").value;
+                const base = {
+                    type,
+                    questionText: div.querySelector(".q-text").value,
+                    marks: parseInt(div.querySelector(".q-marks").value)
+                };
+
+                if (type === 'mcq') {
+                    // ... same inside block
+                    base.options = [
+                        div.querySelector(".q-opt1").value,
+                        div.querySelector(".q-opt2").value,
+                        div.querySelector(".q-opt3").value,
+                        div.querySelector(".q-opt4").value
+                    ];
+                    base.correctAnswer = div.querySelector(".q-cor").value;
+                } else {
+                    base.options = [];
+                    base.correctAnswer = "";
+                }
+                return base;
+            });
+
+            // Calculate assign target
+            const assignType = document.querySelector('input[name="assignType"]:checked').value;
+            const assignedTo = assignType === 'all' ? [] : Array.from(selectedStudentIds);
+
+            if (assignType === 'selected' && assignedTo.length === 0) {
+                alert("Please select at least one student, or choose 'All Students'.");
+                return;
+            }
+
+            // Calculate total marks from questions
+            const totalMarks = questions.reduce((sum, q) => sum + (q.marks || 1), 0);
+
+            if (!title || !subject || !duration || questions.length === 0) {
+                alert("Please fill all fields and add at least one question.");
+                return;
+            }
+
+            if (passMarks > totalMarks) {
+                alert(`Pass Marks (${passMarks}) cannot be greater than Total Marks (${totalMarks}).`);
+                return;
+            }
+
+            const payload = {
+                title,
+                subject,
+                duration,
+                passMarks,
+                totalMarks, // Send totalMarks explicitly
+                randomizeQuestions,
+                enableAntiCheating: document.getElementById("enableAntiCheating").checked,
+                maxWarnings: parseInt(document.getElementById("maxWarnings").value) || 3,
+                questions,
+                assignedTo // Send specific students
+            };
+
+            const url = currentExamId ? `/api/exam/${currentExamId}` : "/api/exam/create";
+            const method = currentExamId ? "PUT" : "POST";
+
+            try {
+                console.log("Sending Payload:", payload); // Debug Log
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                console.log("Server Response:", data); // Debug Log
+                if (res.ok) {
+                    alert(`Exam ${currentExamId ? 'updated' : 'created'} successfully!`);
+                    window.location.reload();
+                } else {
+                    console.error("Server Error:", data);
+                    alert("Error: " + (data.error || data.message || "Unknown error"));
+                }
+            } catch (err) {
+                console.error("Network Error Details:", err);
+                alert("Network error: " + err.message);
+            }
+        }
+
+        async function viewResults(examId, title) {
+            currentExamId = examId; // Track for export naming
+            currentExamTitle = title;
+            document.getElementById("resultsTitle").innerText = `Results: ${title}`;
+            showSection('results');
+
+            const tbody = document.getElementById("resultsBody");
+            tbody.innerHTML = "<tr><td colspan='7' class='p-4 text-center'>Loading...</td></tr>";
+
+            try {
+                const res = await fetch(`/api/attempt/exam/${examId}`);
+                const attempts = await res.json();
+
+                tbody.innerHTML = "";
+
+                if (attempts.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='7' class='p-4 text-center'>No attempts found.</td></tr>";
+                    return;
+                }
+
+                attempts.forEach(attempt => {
+                    const student = attempt.studentId || { name: "Unknown", email: "-", rollNumber: "-" };
+                    const score = attempt.marksObtained;
+                    const total = attempt.examId.totalMarks || 0;
+                    // Pass check logic
+                    let passThreshold = attempt.examId.passMarks;
+                    if (!passThreshold) passThreshold = Math.ceil(total * 0.4);
+                    const passed = score >= passThreshold;
+                    const date = attempt.createdAt ? new Date(attempt.createdAt).toLocaleDateString() : 'N/A';
+
+                    const tr = document.createElement("tr");
+                    // CSS handles hover and striping
+                    tr.innerHTML = `
+                        <td>
+                            <div class="student-cell">
+                                <div>
+                                    <div class="font-bold border-0" style="border: none !important;">${student.name}</div>
+                                    <div class="text-xs text-muted">${student.email || ''}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${student.rollNumber || '-'}</td>
+                        <td class="font-bold text-center">${score} ${attempt.status === 'pending' ? '<div class="text-xs text-warning mt-1 font-medium">Pending</div>' : ''}</td>
+                        <td class="text-center">${total}</td>
+                        <td>
+                            <span class="badge ${attempt.status === 'pending' ? 'badge-yellow' : (passed ? 'badge-green' : 'badge-red')}">
+                                ${attempt.status === 'pending' ? 'PENDING' : (passed ? 'PASSED' : 'FAILED')}
+                            </span>
+                        </td>
+                        <td class="text-sm text-muted">${date}</td>
+                        <td class="flex gap-2">
+                            <button class="btn btn-icon btn-ghost text-warning tooltip" data-tip="${attempt.status === 'pending' ? 'Evaluate Answer' : 'Review / Edit Marks'}" onclick="openEvaluation('${attempt._id}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </button>
+                            
+                            <button class="btn btn-icon btn-ghost text-primary tooltip" data-tip="View Logs & Snapshots" onclick="viewSnapshots('${attempt._id}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"></path><path d="M2 12l5-5"></path><path d="M2 12l5 5"></path><rect x="6" y="4" width="14" height="16" rx="2"></rect><circle cx="13" cy="12" r="2"></circle></svg>
+                            </button>
+
+                            <button class="btn btn-icon btn-ghost text-danger tooltip" data-tip="Delete Result" onclick="deleteResult('${attempt._id}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (err) {
+                console.error("Error loading results:", err);
+                tbody.innerHTML = `<tr><td colspan='7' class='p-4 text-center text-red-500'>Error loading results: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function deleteResult(id) {
+            if (!confirm("Are you sure you want to delete this result? This action cannot be undone.")) return;
+            try {
+                const res = await fetch(`/api/attempt/${id}`, { method: "DELETE" });
+                if (res.ok) {
+                    // Refresh the current results view
+                    // We need to know which exam we are currently viewing. 
+                    // Luckily currentExamId is set in viewResults
+                    // But we also need the title... hmmm. 
+                    // Let's just reload the list or remove the row?
+                    // Removing row is smoother.
+                    // But for simplicity, let's just re-call viewResults if we can, or just alert and remove row visually.
+                    // Improving: specific row removal would be nice but re-fetching ensures consistency.
+                    // We stored currentExamTitle? No.
+                    // Let's just reload the section.
+                    // Wait, viewResults takes (examId, title). I don't have title handy here unless I store it globally.
+                    // Let's store currentExamTitle globally.
+                    alert("Result deleted.");
+                    if (currentExamId && currentExamTitle) {
+                        viewResults(currentExamId, currentExamTitle);
+                    }
+                } else {
+                    alert("Error deleting result");
+                }
+            } catch (err) {
+                alert("Network error");
+            }
+        }
+
+        let evaluationAttemptId = null;
+
+        async function openEvaluation(attemptId) {
+            evaluationAttemptId = attemptId;
+            document.getElementById("evalContent").innerHTML = "Loading...";
+            document.getElementById("evalModal").style.display = "flex";
+
+            try {
+                // Fetch details
+                const res = await fetch(`/api/attempt/exam/${currentExamId}`);
+                const attempts = await res.json();
+                const attempt = attempts.find(a => a._id === attemptId);
+
+                const content = document.getElementById("evalContent");
+                content.innerHTML = "";
+
+                document.getElementById("evalTotalMarks").value = attempt.marksObtained;
+
+                // We need questions to show context. 
+                // exam is inside attempt.examId (if populated) or we need to look at currentExamId's data?
+                // The attempt list route populates 'examId' but possibly only title/totalMarks/showResults. 
+                // We likely need to fetch the FULL EXAM to get the question text.
+                // Let's assuming we might not have it fully.
+                // Optimally we'd fetch /api/exam/:id.
+
+                const examRes = await fetch(`/api/exam/${currentExamId}`);
+                const exam = await examRes.json();
+
+                exam.questions.forEach((q, idx) => {
+                    const ans = attempt.answers.find(a => a.questionIndex === idx) || {};
+
+                    const div = document.createElement("div");
+                    div.className = "mb-4 p-3 border rounded " + (q.type === 'descriptive' ? 'bg-yellow-50' : 'bg-gray-50');
+
+                    let userAnswerDisplay = "";
+                    if (q.type === 'mcq') {
+                        userAnswerDisplay = `Selected: <b>${ans.selectedOption || 'None'}</b> (Correct: ${q.correctAnswer})`;
+                    } else {
+                        userAnswerDisplay = `<div class="mt-1 p-2 bg-white border rounded min-h-[50px] whitespace-pre-wrap">${ans.answerText || 'No Answer'}</div>`;
+                    }
+
+                    div.innerHTML = `
+                        <div class="font-bold mb-1">Q${idx + 1}: ${q.questionText} <span class="text-xs text-muted">(${q.marks} marks)</span></div>
+                        <div class="text-sm">${userAnswerDisplay}</div>
+                     `;
+                    content.appendChild(div);
+                });
+
+            } catch (e) {
+                alert("Error loading attempt");
+            }
+        }
+
+        async function saveMarks() {
+            const marks = document.getElementById("evalTotalMarks").value;
+            if (!marks) return alert("Enter marks");
+
+            try {
+                await fetch(`/api/attempt/evaluate/${evaluationAttemptId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ totalMarks: marks })
+                });
+                alert("Marks updated!");
+                document.getElementById("evalModal").style.display = 'none';
+                viewResults(currentExamId, currentExamTitle); // Refresh
+            } catch (e) {
+                alert("Error saving");
+            }
+        }
+
+        async function viewSnapshots(attemptId) {
+            // We need to fetch the single attempt details including snapshots
+            // But our list API doesn't return full snapshot data (it might be heavy).
+            // Let's assume fetching list INCLUDES snapshots for now, OR we need a single attempt API.
+            // Our GET /exam/:id route returns everything including snapshots (if we didn't exclude them).
+            // Let's try to find it in the current DOM or fetch again.
+            // Cleaner: Fetch just this attempt? We don't have a specific route for single attempt by ID for teacher.
+            // But we have the list route. 
+            // Optimally, we'd add GET /attempt/:id.
+            // Hack for now: We will filter from the list we presumably just loaded, but we need to store it.
+            // Let's just fetch the list again and find it.
+
+            try {
+                // Better approach: Add a new route in backend? No, let's just use the list.
+                // Wait, GET /exam/:examId populates everything. 
+                // Snapshots might be large base64 strings, loading them all in the list view IS A BAD IDEA for performance.
+                // But we haven't optimized that yet. So they ARE there.
+
+                const res = await fetch(`/api/attempt/exam/${currentExamId}`);
+                const attempts = await res.json();
+                const attempt = attempts.find(a => a._id === attemptId);
+
+                if (!attempt || !attempt.snapshots || attempt.snapshots.length === 0) {
+                    alert("No proctoring logs found for this student.");
+                    return;
+                }
+
+                const grid = document.getElementById("snapshotGrid");
+                grid.innerHTML = "";
+
+                attempt.snapshots.forEach((img, idx) => {
+                    const div = document.createElement("div");
+                    div.innerHTML = `
+                        <img src="${img}" style="width:100%; border-radius:4px; border:1px solid #ddd;">
+                        <p class="text-xs text-center mt-1 text-muted">Snapshot ${idx + 1}</p>
+                    `;
+                    grid.appendChild(div);
+                });
+
+                document.getElementById("snapshotModal").style.display = "flex";
+
+            } catch (e) {
+                alert("Error loading logs");
+            }
+        }
+
+        async function deleteAllResults() {
+            if (!confirm(`Are you sure you want to delete ALL results for "${currentExamTitle}"? This is irreversible!`)) return;
+
+            try {
+                const res = await fetch(`/api/attempt/exam/${currentExamId}/all`, { method: "DELETE" });
+                if (res.ok) {
+                    alert("All results deleted.");
+                    viewResults(currentExamId, currentExamTitle);
+                } else {
+                    alert("Error deleting results");
+                }
+            } catch (err) {
+                alert("Network error");
+            }
+        }
+
+        function exportToExcel() {
+            const table = document.getElementById("resultsTable");
+            const wb = XLSX.utils.table_to_book(table, { sheet: "Results" });
+            XLSX.writeFile(wb, `Results_Exam_${currentExamId}.xlsx`);
+        }
+
+        async function exportToPDF() {
+            const tableContainer = document.getElementById("resultsTable").parentElement;
+
+            // Temporarily trick the page into capturing a light-theme look for the PDF
+            const previousBg = tableContainer.style.background;
+            const previousColor = tableContainer.style.color;
+            const wasDark = document.body.getAttribute('data-theme') === 'dark';
+
+            if (wasDark) {
+                document.body.removeAttribute('data-theme'); // Force light theme mode for capture
+            }
+
+            // Inject an aggressive stylesheet to override all Tailwind/Theme colors specifically for print
+            const style = document.createElement("style");
+            style.id = "pdf-export-style";
+            style.innerHTML = `
+                /* Enforce specific color */
+                #resultsTable td, #resultsTable td * {
+                    color: #1e293b !important;
+                }
+                #resultsTable th, #resultsTable th * {
+                    background-color: #4f46e5 !important;
+                    color: #ffffff !important;
+                }
+                
+                /* Remove outer bounding boxes which glitch in html2canvas */
+                .exam-card, .card, table, .table-responsive, .table-wrapper, #resultsTable, 
+                div:has(> #resultsTable), div:has(> div > #resultsTable) {
+                    box-shadow: none !important;
+                    border-radius: 0 !important;
+                }
+                
+                /* Explicitly target the container of the table to add clear borders */
+                #resultsTable { 
+                    border: 2px solid #4f46e5 !important; 
+                }
+                #resultsTable td { 
+                    border-bottom: 1px solid #e2e8f0 !important; 
+                    border-left: 1px solid #e2e8f0 !important; 
+                    border-right: 1px solid #e2e8f0 !important;
+                    border-top: none !important; 
+                }
+                #resultsTable th { 
+                    border: 1px solid #4338ca !important; 
+                    text-transform: uppercase !important;
+                    font-size: 11px !important;
+                    letter-spacing: 0.05em !important;
+                    padding: 14px 15px !important;
+                }
+                #resultsTable tbody tr:nth-child(even) td {
+                    background-color: #f8fafc !important;
+                }
+                #resultsTable tbody tr:nth-child(odd) td {
+                    background-color: #ffffff !important;
+                }
+                
+                /* Aggressively remove all container borders except the table */
+                div:has(#resultsTable) {
+                    border: none !important;
+                    outline: none !important;
+                }
+                
+                /* Hide the Actions column */
+                #resultsTable th:last-child, 
+                #resultsTable td:last-child {
+                    display: none !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Create a professional header just for the PDF
+            const headerDiv = document.createElement("div");
+            headerDiv.id = "pdf-export-header";
+            headerDiv.style.marginBottom = "30px";
+            headerDiv.style.fontFamily = "'Inter', sans-serif";
+            headerDiv.innerHTML = `
+                <div style="border-bottom: 3px solid #4f46e5; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div style="text-align: left;">
+                        <h1 style="margin: 0; color: #4f46e5; font-size: 26px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800;">Examination Report</h1>
+                        <p style="margin: 6px 0 0; color: #64748b; font-size: 14px; font-weight: 500;">Class Performance & Analytics</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h2 style="margin: 0; color: #1e293b; font-size: 18px; font-weight: 600;">Subject / Title: <span style="color: #4f46e5;">${currentExamTitle}</span></h2>
+                        <p style="margin: 6px 0 0; color: #64748b; font-size: 12px; font-weight: 500;">Generated on: ${new Date().toLocaleString()}</p>
+                    </div>
+                </div>
+            `;
+
+            // Prepend the header to the container
+            tableContainer.insertBefore(headerDiv, tableContainer.firstChild);
+
+            tableContainer.style.background = "#ffffff";
+            tableContainer.style.color = "#0f172a";
+            tableContainer.style.padding = "30px"; // Increased breathing room specifically to prevent border clipping
+            tableContainer.style.boxSizing = "border-box";
+
+            // Force table to stay contained and prevent edge-clipping
+            const tableElement = document.getElementById("resultsTable");
+            const previousTableMargin = tableElement.style.margin;
+            const previousTableWidth = tableElement.style.width;
+
+            tableElement.style.margin = "0";
+            tableElement.style.width = "calc(100% - 2px)"; // Shave 2px off width to ensure it fits completely inside the canvas padding
+
+            const opt = {
+                margin: 0.4,
+                filename: `Results_Exam_${currentExamId}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, backgroundColor: '#ffffff', useCORS: true },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+
+            // Wait for render, then restore theme
+            await html2pdf().set(opt).from(tableContainer).save();
+
+            // Cleanup overrides
+            document.getElementById("pdf-export-style").remove();
+            document.getElementById("pdf-export-header").remove();
+            tableContainer.style.padding = ""; // Remove injected padding
+            tableContainer.style.boxSizing = "";
+            tableElement.style.margin = previousTableMargin;
+            tableElement.style.width = previousTableWidth || "";
+
+            if (wasDark) {
+                document.body.setAttribute('data-theme', 'dark');
+            }
+            tableContainer.style.background = previousBg;
+            tableContainer.style.color = previousColor;
+        }
+
+        async function deleteExam(id) {
+            if (!confirm("Are you sure you want to delete this exam?")) return;
+            try {
+                await fetch(`/api/exam/${id}`, { method: "DELETE" });
+                loadExams();
+            } catch (err) { alert("Error deleting exam"); }
+        }
+
+        async function togglePublish(id, status, label) {
+            try {
+                // Send update - Only send the field we want to update
+                const res = await fetch(`/api/exam/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ showResults: status })
+                });
+
+                if (!res.ok) throw new Error("Update failed");
+
+                // Update basic UI label
+                label.innerText = status ? "Published" : "Hidden";
+                label.className = `text-sm font-medium ${status ? 'text-green-600' : 'text-gray-500'}`;
+
+            } catch (err) {
+                console.error(err);
+                alert("Error updating visibility: " + err.message);
+                // Revert toggle if failed (visual only for now)
+            }
+        }
+
+
+        function logout() {
+            localStorage.removeItem("teacherId");
+            localStorage.removeItem("teacherName");
+            window.location.href = "teacher-login.html";
+        }
+
+        // Helper to get initials
+        function getInitials(name) {
+            if (!name) return "?";
+            return name.split(" ").map(n => n[0]).slice(0, 2).join("").toUpperCase();
+        }
+
+        // Add one empty question by default
+        addQuestionUI();
+        loadExams();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</body>
+
+</html>

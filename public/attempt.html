@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Attempt Exam</title>
+  <link rel="stylesheet" href="style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+    rel="stylesheet">
+  <script src="theme.js"></script>
+</head>
+
+<body class="bg-gray-50 theme-student">
+
+  <nav class="navbar">
+    <div class="container">
+      <div class="nav-brand" id="examTitle">Loading Exam...</div>
+      <div class="flex items-center gap-4">
+        <label class="toggle-switch m-0" style="margin-top:0;">
+          <input type="checkbox" class="toggle-input theme-toggle-input">
+          <span class="toggle-slider"></span>
+          <span class="toggle-label text-sm">Dark Mode</span>
+        </label>
+        <div id="studentName"></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="exam-layout">
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="timer-box" id="timer">--:--</div>
+
+        <!-- Live Proctoring Feed -->
+        <div class="mb-4" style="border-radius: 8px; overflow: hidden; border: 2px solid #ef4444; position: relative;">
+          <video id="webcam" autoplay playsinline muted
+            style="width: 100%; height: auto; transform: scaleX(-1); display: block;"></video>
+          <div
+            style="position: absolute; bottom: 0; width: 100%; background: rgba(239, 68, 68, 0.9); color: white; font-size: 10px; text-align: center; padding: 2px;">
+            🔴 Live Proctoring
+          </div>
+        </div>
+
+
+
+        <h4 class="mb-4">Questions</h4>
+        <div class="question-nav" id="questionNav">
+          <!-- Nav buttons generated here -->
+        </div>
+
+        <div class="mt-4">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-4 h-4 bg-gray-200 border rounded"></div>
+            <span class="text-sm">Not Visited</span>
+          </div>
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-4 h-4 bg-green-500 rounded text-white text-xs flex items-center justify-center">✓</div>
+            <span class="text-sm">Answered</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-4 h-4 bg-yellow-500 rounded text-white text-xs flex items-center justify-center">!</div>
+            <span class="text-sm">Marked for Review</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary mt-4 w-full" onclick="confirmSubmit()">Submit Exam</button>
+      </aside>
+
+      <!-- Question Area -->
+      <main class="question-area" id="questionArea">
+        <div class="flex justify-between items-center mb-4">
+          <h3 id="questionNumber">Question 1</h3>
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="markReview" onchange="toggleReview()">
+            <label for="markReview" class="cursor-pointer select-none">Mark for Review</label>
+          </div>
+        </div>
+
+        <div id="questionText" class="question-text">
+          <!-- Question text goes here -->
+        </div>
+
+        <div id="options" class="options-grid">
+          <!-- Options go here -->
+        </div>
+
+        <div class="flex justify-between mt-4 border-t pt-4">
+          <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()">Previous</button>
+          <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">Next</button>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="modalOverlay"
+    style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index:100;"
+    class="flex items-center justify-center">
+    <div class="card" style="max-width:400px; padding:2rem;">
+      <h3 class="mb-4">Submit Exam?</h3>
+      <p class="mb-4">Are you sure you want to submit? You cannot change answers after submission.</p>
+      <div class="flex gap-2 justify-end">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="submitExam()">Yes, Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PROCTORING LOGIC
+    let snapshotInterval;
+
+    async function startCamera() {
+      // Check for bypass flag
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('bypassCamera') === 'true') {
+        console.warn("Camera bypassed by user.");
+        const video = document.getElementById('webcam');
+        if (video) {
+          video.parentElement.innerHTML = '<div style="width:100%; height:100%; background:#333; color:white; display:flex; align-items:center; justify-content:center; font-size:0.8rem;">Camera Bypassed</div>';
+        }
+        return true;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.getElementById('webcam');
+        if (video) {
+          video.srcObject = stream;
+          // Start capturing every 30 seconds
+          snapshotInterval = setInterval(captureSnapshot, 30000);
+        }
+        return true;
+      } catch (err) {
+        console.error("Camera Error:", err);
+
+        let userMessage = "We could not access your camera.";
+        const errorName = err.name; // NotAllowedError, NotFoundError, etc.
+
+        if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
+          userMessage = "<strong>Permission Denied:</strong> Please allow camera access in your browser settings (click lock icon 🔒 in URL bar).";
+        } else if (errorName === 'NotFoundError' || errorName === 'DevicesNotFoundError') {
+          userMessage = "<strong>No Camera Found:</strong> Please check if your camera is connected and not used by another app.";
+        } else if (errorName === 'NotReadableError' || errorName === 'TrackStartError') {
+          userMessage = "<strong>Camera In Use:</strong> Your camera might be used by another application (Zoom, Teams, etc.). Please close other apps and try again.";
+        } else {
+          userMessage = `<strong>Error:</strong> ${err.message || errorName}`;
+        }
+
+        // Show a nice retry screen with a "Continue Anyway" option
+        document.body.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; text-align:center; font-family:sans-serif;">
+            <h1 style="color:#d32f2f;">📷 Camera Access Required</h1>
+            <p style="font-size:1.1rem; color:#555; max-width:500px; margin:20px auto;">
+                ${userMessage}
+            </p>
+            <div style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
+                <button onclick="window.location.reload()" 
+                    style="padding:12px 25px; font-size:1rem; cursor:pointer; background:#4f46e5; color:white; border:none; border-radius:6px;">
+                    Try Again 🔄
+                </button>
+                <button onclick="window.location.href='attempt.html?examId=${examId}&bypassCamera=true'" 
+                    style="padding:12px 25px; font-size:1rem; cursor:pointer; background:#64748b; color:white; border:none; border-radius:6px;">
+                    Continue Without Camera ➡️
+                </button>
+            </div>
+            <p style="margin-top:20px; font-size:0.8rem; color:#888;">
+                Technical Details: ${errorName}
+            </p>
+        </div>`;
+        return false;
+      }
+    }
+
+    async function captureSnapshot() {
+      const video = document.getElementById('webcam');
+      if (!video) return;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 240;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Convert to base64
+      const image = canvas.toDataURL('image/jpeg', 0.5);
+
+      if (!window.snapshots) window.snapshots = [];
+      window.snapshots.push(image);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const examId = params.get("examId");
+    const studentId = localStorage.getItem("studentId");
+
+    if (!studentId) {
+      window.location.href = "login.html";
+    }
+
+    let exam = null;
+    let currentQuestionIndex = 0;
+    let answers = {}; // { index: selectedOption }
+    let reviewStatus = {}; // { index: boolean }
+    let timerInterval;
+
+    let examIdKey = "";
+    let orderKey = "";
+    let shuffledIndices = [];
+    let isSubmitting = false;
+
+    async function loadExam() {
+      try {
+        const res = await fetch(`/api/exam/${examId}`);
+        if (!res.ok) throw new Error("Failed to load exam");
+
+        exam = await res.json();
+        document.getElementById("examTitle").innerText = exam.title;
+
+        // Auto Save Setup
+        examIdKey = `exam_answers_${studentId}_${examId}`;
+        orderKey = `exam_order_${studentId}_${examId}`;
+
+        // Load or Create Shuffled Order
+        const savedOrder = localStorage.getItem(orderKey);
+
+        if (exam.randomizeQuestions) {
+          console.log("Generating NEW random order (Shuffle on Refresh)");
+          shuffledIndices = createShuffledIndices(exam.questions.length);
+          localStorage.setItem(orderKey, JSON.stringify(shuffledIndices));
+        } else {
+          console.log("Using SEQUENTIAL order");
+          shuffledIndices = Array.from({ length: exam.questions.length }, (_, i) => i);
+          localStorage.setItem(orderKey, JSON.stringify(shuffledIndices));
+        }
+
+        const savedData = localStorage.getItem(examIdKey);
+        if (savedData) {
+          answers = JSON.parse(savedData);
+        }
+
+        // Initialize review status
+        exam.questions.forEach((_, i) => {
+          if (answers[i] === undefined) answers[i] = null;
+          if (reviewStatus[i] === undefined) reviewStatus[i] = false;
+        });
+
+        renderQuestionNav();
+        loadQuestion(0); // Load first question in SHUFFLED order
+        startTimer(exam.duration);
+
+      } catch (err) {
+        alert("Error loading exam: " + err.message);
+      }
+    }
+
+    function createShuffledIndices(length) {
+      const indices = Array.from({ length }, (_, i) => i);
+      for (let i = length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [indices[i], indices[j]] = [indices[j], indices[i]];
+      }
+      return indices;
+    }
+
+    function startTimer(durationMinutes) {
+      let time = durationMinutes * 60;
+      const timerEl = document.getElementById("timer");
+
+      timerInterval = setInterval(() => {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+
+        timerEl.innerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+        if (time <= 0) {
+          clearInterval(timerInterval);
+          alert("Time's up! Submitting your exam automatically.");
+          submitExam();
+        }
+        time--;
+      }, 1000);
+    }
+
+    let navUpdateTimeout;
+    function selectOption(displayIndex, option, isText = false) {
+      const actualIndex = shuffledIndices[displayIndex];
+      answers[actualIndex] = option;
+
+      // Auto Save
+      localStorage.setItem(examIdKey, JSON.stringify(answers));
+
+      // For text, debounce the nav update to avoid lag/focus loss
+      if (isText) {
+        clearTimeout(navUpdateTimeout);
+        navUpdateTimeout = setTimeout(renderQuestionNav, 1000);
+      } else {
+        renderQuestionNav(); // Immediate update for MCQ
+
+        // Keep selection UI in sync for MCQ
+        const inputs = document.querySelectorAll(`input[name="option"]`);
+        inputs.forEach(input => {
+          input.parentElement.classList.toggle('selected', input.value === option);
+        });
+      }
+    }
+
+    function renderQuestionNav() {
+      const nav = document.getElementById("questionNav");
+      nav.innerHTML = "";
+
+      exam.questions.forEach((_, displayIndex) => {
+        const actualIndex = shuffledIndices[displayIndex];
+        const btn = document.createElement("div");
+
+        // Status checks use ACTUAL index
+        const isAnswered = answers[actualIndex] !== null && answers[actualIndex] !== undefined;
+        const isReview = reviewStatus[actualIndex] === true;
+        const isActive = currentQuestionIndex === displayIndex;
+
+        btn.className = `nav-btn ${isActive ? 'active' : ''} ${isAnswered ? 'answered' : ''} ${isReview ? 'review' : ''}`;
+        btn.innerText = displayIndex + 1;
+        btn.onclick = () => loadQuestion(displayIndex);
+        nav.appendChild(btn);
+      });
+    }
+
+    function loadQuestion(displayIndex) {
+      currentQuestionIndex = displayIndex;
+      const actualIndex = shuffledIndices[displayIndex];
+      const q = exam.questions[actualIndex];
+
+      const area = document.getElementById("questionArea");
+      area.style.animation = 'none';
+      area.offsetHeight; /* trigger reflow for animation restart */
+      area.style.animation = null;
+
+      document.getElementById("questionNumber").innerText = `Question ${displayIndex + 1} of ${exam.questions.length}`;
+      document.getElementById("questionText").innerText = q.questionText;
+
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      if (q.type === 'descriptive' || (!q.options || q.options.length === 0)) {
+        const textarea = document.createElement("textarea");
+        textarea.className = "w-full p-2 border rounded mt-2";
+        textarea.rows = 6;
+        textarea.placeholder = "Type your answer here...";
+        textarea.value = answers[actualIndex] || "";
+
+        textarea.oninput = (e) => {
+          selectOption(displayIndex, e.target.value, true); // Pass true for isText
+        };
+        optionsDiv.appendChild(textarea);
+      } else {
+        q.options.forEach(opt => {
+          const label = document.createElement("label");
+          const isSelected = answers[actualIndex] === opt;
+          label.className = `option-label ${isSelected ? 'selected' : ''}`;
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = "option";
+          input.value = opt;
+          input.checked = isSelected;
+
+          input.onchange = () => selectOption(displayIndex, opt);
+
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(opt));
+          optionsDiv.appendChild(label);
+        });
+      }
+
+      document.getElementById("markReview").checked = reviewStatus[actualIndex] || false;
+
+      // Button states
+      document.getElementById("prevBtn").disabled = displayIndex === 0;
+      document.getElementById("nextBtn").innerText = displayIndex === exam.questions.length - 1 ? "Finish" : "Next";
+      document.getElementById("nextBtn").onclick = displayIndex === exam.questions.length - 1 ? confirmSubmit : nextQuestion;
+
+      renderQuestionNav();
+    }
+
+    function toggleReview() {
+      const actualIndex = shuffledIndices[currentQuestionIndex];
+      reviewStatus[actualIndex] = document.getElementById("markReview").checked;
+      renderQuestionNav();
+    }
+
+    function nextQuestion() {
+      if (currentQuestionIndex < exam.questions.length - 1) {
+        loadQuestion(currentQuestionIndex + 1);
+      }
+    }
+
+    function prevQuestion() {
+      if (currentQuestionIndex > 0) {
+        loadQuestion(currentQuestionIndex - 1);
+      }
+    }
+
+    function confirmSubmit() {
+      document.getElementById("modalOverlay").style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("modalOverlay").style.display = "none";
+    }
+
+    async function submitExam() {
+      if (isSubmitting) return; // Prevent double submission
+      isSubmitting = true;
+      clearInterval(timerInterval);
+
+      // Prepare payload
+      const formattedAnswers = Object.entries(answers).map(([key, val]) => {
+        const qIndex = parseInt(key);
+        const q = exam.questions[qIndex];
+        const isDescriptive = q.type === 'descriptive' || (!q.options || q.options.length === 0);
+
+        return {
+          questionIndex: qIndex,
+          selectedOption: !isDescriptive ? val : null,
+          answerText: isDescriptive ? val : null
+        };
+      });
+
+      // Handle camera bypass for submission payload
+      const urlParams = new URLSearchParams(window.location.search);
+      const isBypassed = urlParams.get('bypassCamera') === 'true';
+
+      // Capture final snapshot if not bypassed
+      if (!isBypassed) {
+        try { await captureSnapshot(); } catch (e) { console.error("Final snapshot failed", e); }
+      }
+
+      console.log("Submitting with snapshots count:", (window.snapshots || []).length);
+
+      try {
+        const res = await fetch("/api/attempt/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            examId,
+            studentId,
+            answers: formattedAnswers,
+            snapshots: isBypassed ? [] : (window.snapshots || []) // Send empty if bypassed
+          })
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          localStorage.removeItem(examIdKey);
+          window.location.href = `result.html?recent=true`;
+        } else {
+          alert(result.message || "Submission failed");
+          isSubmitting = false;
+        }
+      } catch (err) {
+        alert("Network error during submission");
+        isSubmitting = false;
+      }
+    }
+
+    let warningCount = 0;
+
+    function initAntiCheating() {
+      if (!exam || !exam.enableAntiCheating) return;
+
+      const maxWarnings = exam.maxWarnings || 3;
+
+      document.addEventListener("visibilitychange", function () {
+        HandleVisibilityChange(maxWarnings);
+      });
+    }
+
+    function HandleVisibilityChange(maxWarnings) {
+      if (document.hidden && !isSubmitting) {
+        warningCount++;
+        const remaining = maxWarnings - warningCount;
+
+        if (warningCount > maxWarnings) {
+          alert(`VIOLATION: You switched tabs too many times! Your exam is being auto-submitted.`);
+          submitExam();
+        } else {
+          alert(`WARNING ${warningCount}/${maxWarnings}: Tab switching is prohibited! \nIf you do this ${remaining} more times, your exam will be terminated.`);
+        }
+      }
+    }
+
+    loadExam().then(() => {
+      // Start camera first, THEN init anti-cheating to avoid false flags
+      startCamera().then((success) => {
+        if (success) {
+          setTimeout(initAntiCheating, 1000);
+        }
+      });
+    });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Exam Results</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+        rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+
+<body class="bg-gray-50 theme-student">
+
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">My Results</div>
+            <div class="nav-links items-center">
+                <label class="toggle-switch">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label text-sm">Dark Mode</span>
+                </label>
+                <a href="student.html">Dashboard</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card" style="max-width: 1000px; margin: 0 auto;">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="mb-0">My Exam Results</h2>
+                <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
+            </div>
+
+            <div class="table-container">
+                <table class="custom-table" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th>Exam Title</th>
+                            <th>Subject</th>
+                            <th>Score</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <!-- Rows loaded here -->
+                    </tbody>
+                </table>
+                <div id="loading" class="text-center p-4">Loading results...</div>
+                <div id="noResults" class="text-center p-4 text-muted" style="display:none">No exams attempted yet.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+      Hidden Container for PDF Generation 
+      CRITICAL: Do NOT use display: none; it causes blank PDFs.
+      We use fixed positioning off-screen.
+    -->
+    <div style="position: fixed; left: -10000px; top: 0; width: 800px; height: auto; overflow: visible;">
+        <div id="scorecardTemplate"
+            style="background: white; padding: 40px; font-family: 'Segoe UI', sans-serif; color: #333; border: 1px solid #e2e8f0;">
+
+            <!-- Header -->
+            <div
+                style="border-bottom: 3px solid #4f46e5; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1
+                        style="margin: 0; color: #4f46e5; font-size: 28px; text-transform: uppercase; letter-spacing: 1px;">
+                        Examination Report</h1>
+                    <p style="margin: 5px 0 0; color: #666; font-size: 14px;">Official Student Scorecard</p>
+                </div>
+                <div style="text-align: right;">
+                    <h2 style="margin: 0; color: #333; font-size: 20px;">Online Exam System</h2>
+                    <p style="margin: 5px 0 0; color: #666; font-size: 12px;">Generated on: <span
+                            id="pdfGenDate"></span></p>
+                </div>
+            </div>
+
+            <!-- Student Details Box -->
+            <div
+                style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 5px 0; color: #64748b; font-size: 13px; width: 110px;">Student Name:</td>
+                        <td style="padding: 5px 0; font-weight: 600; font-size: 16px; color: #1e293b; width: auto;"
+                            id="pdfStudentName">-</td>
+                        <td
+                            style="padding: 5px 0; color: #64748b; font-size: 13px; width: 110px; text-align: right; padding-right: 15px;">
+                            Roll Number:</td>
+                        <td style="padding: 5px 0; font-weight: 600; font-size: 16px; color: #1e293b; width: 140px; text-align: left;"
+                            id="pdfRollNumber">-</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Exam Results Table -->
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px; border: 1px solid #e2e8f0;">
+                <thead>
+                    <tr style="background-color: #4f46e5; color: white;">
+                        <th style="padding: 12px 15px; text-align: left; font-weight: 600; border: 1px solid #4f46e5;">
+                            Description</th>
+                        <th style="padding: 12px 15px; text-align: right; font-weight: 600; border: 1px solid #4f46e5;">
+                            Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-weight: 500;">Exam Title
+                        </td>
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; text-align: right;"
+                            id="pdfExamTitle">-</td>
+                    </tr>
+                    <tr style="background-color: #f8fafc;">
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-weight: 500;">Subject</td>
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; text-align: right;"
+                            id="pdfSubject">-</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-weight: 500;">Date
+                            Attempted</td>
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; text-align: right;"
+                            id="pdfDate">-</td>
+                    </tr>
+                    <tr style="background-color: #f8fafc;">
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; font-weight: 500;">Total
+                            Questions</td>
+                        <td style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; text-align: right;"
+                            id="pdfTotalQ">-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Summary / Score Section -->
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 50px;">
+                <div
+                    style="width: 250px; background: #fff; border: 2px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                    <div
+                        style="background: #f1f5f9; padding: 10px; text-align: center; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #475569;">
+                        FINAL SCORE
+                    </div>
+                    <div style="padding: 20px; text-align: center;">
+                        <div style="font-size: 32px; font-weight: 700; color: #4f46e5;" id="pdfScoreDisplay">-</div>
+                        <div style="font-size: 13px; color: #64748b; margin-top: 5px;">Total Marks: <span
+                                id="pdfTotalDisplay">-</span></div>
+                    </div>
+                    <div style="padding: 10px; text-align: center; color: white; font-weight: 600; letter-spacing: 1px;"
+                        id="pdfStatusBg">
+                        <span id="pdfStatusText">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer / Signature -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 50px;">
+                <div style="text-align: left; opacity: 0.7;">
+                    <p style="margin: 0; font-size: 11px; color: #94a3b8;">This is a computer-generated document.</p>
+                    <p style="margin: 2px 0 0; font-size: 11px; color: #94a3b8;">No signature required.</p>
+                </div>
+                <div style="text-align: center; width: 200px;">
+                    <div style="border-bottom: 1px solid #cbd5e1; margin-bottom: 10px;"></div>
+                    <p style="margin: 0; font-size: 14px; font-weight: 600; color: #475569;">Administrator</p>
+                    <p style="margin: 0; font-size: 12px; color: #94a3b8;">Online Exam Authority</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const studentId = localStorage.getItem("studentId");
+        if (!studentId) window.location.href = "login.html";
+
+        function logout() {
+            localStorage.removeItem("studentId");
+            window.location.href = "login.html";
+        }
+
+        async function loadResults() {
+            try {
+                const storedName = localStorage.getItem("studentName") || "Student";
+                const storedRoll = localStorage.getItem("rollNumber") || "N/A";
+                // Prepare profile object we can pass to the generator
+                window.currentUserProfile = { name: storedName, rollNumber: storedRoll };
+
+                // DEBUG ALERT
+                // alert(`DEBUG: Fetching results for Student ID: ${studentId}`);
+                console.log(`DEBUG: Fetching results for Student ID: ${studentId}`);
+
+                const res = await fetch(`/api/attempt/result/${studentId}`);
+                if (!res.ok) throw new Error("Failed to fetch results: " + res.statusText);
+
+                const data = await res.json();
+                console.log("Fetched Results Data:", data);
+
+                const tbody = document.getElementById("resultsBody");
+                tbody.innerHTML = ''; // Clear loading message
+
+                if (!data || data.length === 0) {
+                    console.warn("No results found for this student.");
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("noResults").style.display = "block";
+                    document.getElementById("noResults").innerHTML = `No exams attempted yet for ID: ${studentId}<br><small>(Check console for details)</small>`;
+                    return;
+                }
+
+                document.getElementById("loading").style.display = "none";
+
+                // data.reverse().forEach(attempt => { ...
+
+                data.reverse().forEach(attempt => {
+                    // Fallback for deleted/populated exams
+                    const exam = attempt.examId || { title: 'Unknown Exam (Deleted)', subject: 'N/A', totalMarks: 0, passMarks: 0 };
+
+                    // Check if result is hidden
+                    if (attempt.examId && attempt.resultHidden) {
+                        const tr = document.createElement("tr");
+                        tr.innerHTML = `
+                            <td style="font-weight: 500;">${exam.title}</td>
+                            <td class="text-muted">${exam.subject}</td>
+                            <td colspan="5" class="text-center text-muted" style="font-style: italic; color: #94a3b8;">
+                                <span style="background: #f1f5f9; padding: 4px 12px; border-radius: 999px; font-size: 13px;">
+                                    Result Pending / Withheld
+                                </span>
+                            </td>
+                         `;
+                        tbody.appendChild(tr);
+                        return;
+                    }
+
+                    const score = attempt.marksObtained;
+                    // Use 'exam' variable for safety
+                    const total = exam.totalMarks || attempt.answers.length || 0;
+
+                    let passThreshold = exam.passMarks;
+                    if (!passThreshold) passThreshold = Math.ceil(total * 0.4);
+
+                    let passed = false;
+                    let badgeClass = '';
+                    let statusText = '';
+                    let scoreDisplay = score;
+
+                    if (attempt.status === 'pending') {
+                        statusText = 'PENDING';
+                        badgeClass = 'badge-yellow';
+                        scoreDisplay = 'Wait';
+                    } else {
+                        passed = score >= passThreshold;
+                        statusText = passed ? 'PASSED' : 'FAILED';
+                        badgeClass = passed ? 'badge-green' : 'badge-red';
+                    }
+
+                    const date = attempt.createdAt ? new Date(attempt.createdAt).toLocaleDateString() : 'N/A';
+
+                    // PDF Data uses safe 'exam' object
+                    const pdfData = {
+                        title: exam.title,
+                        subject: exam.subject,
+                        score: score,
+                        total: total,
+                        totalQ: attempt.answers.length,
+                        status: statusText,
+                        date: date
+                    };
+
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td style="font-weight: 500;">${exam.title}</td>
+                        <td class="text-muted">${exam.subject}</td>
+                        <td style="font-weight: 700; color: ${statusText === 'PASSED' ? 'var(--success)' : statusText === 'FAILED' ? 'var(--danger)' : '#f59e0b'}">${scoreDisplay}</td>
+                        <td>${total}</td>
+                        <td>
+                            <span class="badge ${badgeClass}" style="${statusText === 'PENDING' ? 'background:#fef3c7; color:#d97706;' : ''}">
+                                ${statusText}
+                            </span>
+                        </td>
+                        <td class="text-sm text-muted">${date}</td>
+                        <td>
+                             <button class="btn btn-primary btn-sm" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" 
+                                onclick='generatePDF(${JSON.stringify(pdfData)})' ${statusText === 'PENDING' ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>
+                                ${statusText === 'PENDING' ? 'Wait' : 'Download'}
+                             </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById("loading").style.display = "block";
+                document.getElementById("loading").innerHTML = `<span style="color:red">Error: ${err.message}</span>`;
+            }
+        }
+
+        async function clearHistory() {
+            if (!confirm("Are you sure you want to clear your ENTIRE exam history? This cannot be undone.")) return;
+
+            try {
+                const res = await fetch(`/api/attempt/student/${studentId}`, { method: "DELETE" });
+                if (res.ok) {
+                    alert("History cleared.");
+                    loadResults();
+                } else {
+                    alert("Error clearing history");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error");
+            }
+        }
+
+        function generatePDF(data) {
+            // Get profile from window or local storage logic
+            const profile = window.currentUserProfile || { name: 'Student', rollNumber: 'N/A' };
+
+            // Populate Template
+            document.getElementById("pdfStudentName").innerText = profile.name;
+            document.getElementById("pdfRollNumber").innerText = profile.rollNumber;
+            document.getElementById("pdfGenDate").innerText = new Date().toLocaleDateString();
+
+            document.getElementById("pdfExamTitle").innerText = data.title;
+            document.getElementById("pdfSubject").innerText = data.subject;
+            document.getElementById("pdfDate").innerText = data.date;
+            document.getElementById("pdfTotalQ").innerText = data.totalQ || '-';
+
+            document.getElementById("pdfScoreDisplay").innerText = data.score;
+            document.getElementById("pdfTotalDisplay").innerText = data.total;
+
+            const statusBg = document.getElementById("pdfStatusBg");
+            const statusText = document.getElementById("pdfStatusText");
+
+            statusText.innerText = data.status;
+            if (data.status === "PASSED") {
+                statusBg.style.backgroundColor = "#22c55e"; // Green
+            } else {
+                statusBg.style.backgroundColor = "#ef4444"; // Red
+            }
+
+            // Generate
+            const element = document.getElementById("scorecardTemplate");
+
+            // Inject temporary styles to override Dark Mode global table CSS
+            const style = document.createElement('style');
+            style.id = 'pdf-export-style';
+            style.innerHTML = `
+                #scorecardTemplate td, #scorecardTemplate * {
+                    color: #0f172a !important;
+                }
+                #scorecardTemplate th {
+                    color: #ffffff !important;
+                }
+                #scorecardTemplate > table {
+                    border: 2px solid #94a3b8 !important;
+                }
+                #scorecardTemplate > table td {
+                    border-bottom: 1px solid #cbd5e1 !important;
+                    border-left: 1px solid #cbd5e1 !important;
+                    border-right: 1px solid #cbd5e1 !important;
+                }
+                #scorecardTemplate tr {
+                    background-color: transparent !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+            const opt = {
+                margin: 0.5,
+                filename: `Scorecard-${data.title}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                const injectedStyle = document.getElementById('pdf-export-style');
+                if (injectedStyle) injectedStyle.remove();
+            });
+        }
+
+        loadResults();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</body>
+
+</html>

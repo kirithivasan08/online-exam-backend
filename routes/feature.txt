@@ -1,0 +1,45 @@
+Student Features
+
+Student Registration & Login (email / phone / roll number)
+
+Exam Dashboard (upcoming, ongoing, completed exams)
+
+Timed Exams with Auto-Submit
+
+Multiple Question Types
+(MCQ, True/False, Short Answer, Coding – optional)
+
+Question Navigation Panel (jump to any question)
+
+Mark for Review option
+
+Auto Save Answers (prevent data loss)
+
+Result & Scorecard View
+
+Exam History (previous attempts & scores)
+
+Profile Management (name, photo, password)
+
+👨‍🏫 Admin / Teacher Features
+
+Admin Login & Role Management
+
+Create / Edit / Delete Exams
+
+Question Bank Management
+
+Set Exam Rules
+(duration, negative marking, pass mark)
+
+Assign Exams to Students / Groups
+
+Auto Evaluation for MCQs
+
+Manual Evaluation for Descriptive Answers
+
+Result Publishing Control
+
+Student Performance Analytics (charts, rankings)
+
+Export Results (PDF / Excel)

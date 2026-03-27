@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Teacher Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+        rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div style="position: absolute; top: 1rem; right: 2rem;">
+        <label class="toggle-switch">
+            <input type="checkbox" class="toggle-input theme-toggle-input">
+            <span class="toggle-slider"></span>
+            <span class="toggle-label text-sm" style="color: var(--text)">Dark Mode</span>
+        </label>
+    </div>
+    <div class="auth-container card">
+        <h2 class="text-center mb-4">Teacher Portal</h2>
+
+        <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="email" placeholder="teacher@school.com">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="password" placeholder="********">
+        </div>
+
+        <button class="btn btn-primary w-full mb-4" onclick="login()">Login</button>
+
+        <div class="text-center text-sm">
+            New Teacher? <a href="teacher-register.html">Create an Account</a>
+        </div>
+
+        <div class="text-center text-sm mt-2">
+            <a href="index.html" class="text-muted">Back to Home</a>
+        </div>
+
+        <div id="msg" class="alert mt-4" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("verified") === "true") {
+                const msgDiv = document.getElementById("msg");
+                msgDiv.className = "alert alert-success mt-4";
+                msgDiv.style.display = "block";
+                msgDiv.innerText = "Email successfully verified! You can now login.";
+
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            if (!email || !password) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/teacher/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem("teacherId", data.teacherId);
+                    localStorage.setItem("teacherName", data.name);
+                    window.location.href = "teacher.html";
+                } else {
+                    alert(data.message || "Login failed");
+                }
+            } catch (err) {
+                alert("Network error");
+            }
+        }
+    </script>
+</body>
+
+</html>
