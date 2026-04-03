@@ -20,7 +20,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
 
     try {
         const { data, error } = await resend.emails.send({
-            from: "Examsphere <verify@send.examsphere.space>",
+            from: "Examsphere <verify@examsphere.space>",
             to,
             subject,
             html,
