@@ -107,7 +107,7 @@ router.put("/:id", async (req, res) => {
                                 <p style="margin: 5px 0;"><strong>Status:</strong> ${attempt.status === 'evaluated' ? 'Graded' : 'Pending Review'}</p>
                             </div>
 
-                            <a href="http://localhost:5000/login.html" style="background: #4f46e5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Detailed Report</a>
+                            <a href="${process.env.BASE_URL || 'https://examsphere.space'}/login.html" style="background: #4f46e5; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Detailed Report</a>
                         </div>
                     `;
                     sendEmail({ to: student.email, subject, html });

@@ -29,7 +29,7 @@ routes.post("/register", async (req, res) => {
         await student.save();
 
         // Send Email Verification Link
-        const verifyUrl = `http://localhost:5000/api/student/verify/${verificationToken}`;
+        const verifyUrl = `${process.env.BASE_URL || 'https://examsphere.space'}/api/student/verify/${verificationToken}`;
         const emailHtml = `
             <div style="font-family: Arial, sans-serif; padding: 20px;">
                 <h2 style="color: #4f46e5;">Welcome to Online Exam System!</h2>
