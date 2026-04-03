@@ -13,7 +13,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
     // Check if API key is set
     if (!process.env.RESEND_API_KEY) {
         console.error("⚠️  Resend API Key missing in environment variables. Email NOT sent.");
-        return undefined;
+        return { success: false, error: "Email configuration missing on server." };
     }
 
     console.log(`📧 Preparing to send email via Resend to: ${to}`);
@@ -27,16 +27,15 @@ const sendEmail = async ({ to, subject, html, text }) => {
         });
 
         if (error) {
-            console.error("❌ Error sending email via Resend:", error);
-            return undefined; // Return undefined so fallback kicks in
+            console.error("❌ Error sending email via Resend:", JSON.stringify(error, null, 2));
+            return { success: false, error: error.message || "Resend API error" };
         }
 
-        console.log("✅ Email sent successfully via Resend: %s", data.id);
-        return data;
+        console.log("✅ Email sent successfully via Resend. ID:", data.id);
+        return { success: true, id: data.id };
     } catch (error) {
         console.error("❌ Exception when calling Resend API:", error);
-        // Don't throw, return undefined so fallback kicks in
-        return undefined;
+        return { success: false, error: error.message || "Resend connection error" };
     }
 };
 

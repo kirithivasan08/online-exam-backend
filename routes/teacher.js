@@ -37,11 +37,27 @@ routes.post("/register", async (req, res) => {
             </div>
         `;
 
-        const emailSentInfo = await sendEmail({
+        const emailResult = await sendEmail({
             to: email,
             subject: "Verify Your Teacher Account Email",
             html: emailHtml
         });
+
+        if (!emailResult.success) {
+            // Clean up: Delete the teacher so they aren't stuck in "already exists" state
+            await Teacher.deleteOne({ _id: teacher._id });
+            
+            let userFriendlyError = emailResult.error;
+            if (userFriendlyError.includes("onboarding@resend.dev")) {
+                userFriendlyError = "Resend Sandbox Restriction: Emails can only be sent to your own email address. Please verify your domain on Resend.com to send to others!";
+            }
+
+            return res.status(500).json({ 
+                error: "Verification email failed to send.",
+                details: userFriendlyError,
+                message: "We couldn't send the verification email. " + userFriendlyError
+            });
+        }
 
         res.json({ message: "Registration successful! Please check your email to verify your account before logging in." });
     } catch (err) {
