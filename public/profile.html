@@ -26,17 +26,6 @@
             overflow: hidden;
         }
 
-        .profile-banner::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
-            opacity: 0.1;
-        }
-
         .edit-profile-btn {
             position: absolute;
             top: 24px;
@@ -165,28 +154,111 @@
             gap: 12px;
         }
 
-        .badge-verified {
-            display: inline-flex;
+        /* Modal Styles Upgrade */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
             align-items: center;
-            gap: 6px;
-            padding: 5px 12px;
-            border-radius: 999px;
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
         }
 
-        /* Modal Overrides */
         .modal-content {
-            border-radius: 24px;
-            border: none;
+            background: var(--surface);
+            width: 100%;
+            max-width: 480px;
+            border-radius: 28px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .modal-header { border-radius: 24px 24px 0 0; }
-        .modal-footer { border-radius: 0 0 24px 24px; }
+
+        @keyframes modalPop {
+            from { transform: scale(0.9) translateY(30px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 24px 30px;
+            background: linear-gradient(135deg, var(--primary) 0%, #6366f1 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--surface-hover);
+            border-top: 1px solid var(--border);
+        }
+
+        .close-modal-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            cursor: pointer;
+            color: white;
+            padding: 6px;
+            border-radius: 10px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .btn-dismiss {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 24px;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-dismiss:hover {
+            background: var(--border);
+            color: var(--text);
+        }
 
         [data-theme="dark"] .avatar-circle { background: var(--surface); }
     </style>
@@ -232,11 +304,8 @@
                 </div>
 
                 <div class="grid md-grid-cols-2 gap-8 text-left">
-                    <!-- Personal Info Card -->
                     <div class="info-card">
-                        <h3 class="section-title">
-                            Personal Details
-                        </h3>
+                        <h3 class="section-title">Personal Details</h3>
                         <div class="data-row">
                             <div class="icon-box">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -266,11 +335,8 @@
                         </div>
                     </div>
 
-                    <!-- Academic/Account Details Card -->
                     <div class="info-card">
-                        <h3 class="section-title">
-                            Academic Status
-                        </h3>
+                        <h3 class="section-title">Academic Status</h3>
                         <div class="data-row" id="deptDisplayGroup">
                             <div class="icon-box">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
@@ -307,35 +373,35 @@
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- Redesigned Modal -->
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="m-0 font-bold" style="font-family: 'Plus Jakarta Sans', sans-serif;">Update Information</h3>
-                <button onclick="closeEditModal()" class="close-modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                <button onclick="closeEditModal()" class="close-modal-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group mb-6">
-                    <label class="form-label">Full Name</label>
-                    <div style="position: relative;">
-                        <input type="text" id="editName" class="form-input" style="padding-left: 44px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <div class="form-group mb-8">
+                    <label class="form-label" style="font-weight: 700; color: var(--primary);">Full Account Name</label>
+                    <div style="position: relative; margin-top: 8px;">
+                        <input type="text" id="editName" class="form-input" style="padding: 14px 14px 14px 48px; border-radius: 16px; font-weight: 600;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--primary);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Mobile Number</label>
-                    <div style="position: relative;">
-                        <input type="text" id="editPhone" class="form-input" style="padding-left: 44px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <div class="form-group mb-4">
+                    <label class="form-label" style="font-weight: 700; color: var(--primary);">Contact Mobile</label>
+                    <div style="position: relative; margin-top: 8px;">
+                        <input type="text" id="editPhone" class="form-input" style="padding: 14px 14px 14px 48px; border-radius: 16px; font-weight: 600;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--primary);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
                     </div>
                 </div>
-                <div id="msg" class="alert mt-4" style="display: none;"></div>
+                <div id="msg" class="alert mt-4" style="display: none; border-radius: 14px; font-weight: 600;"></div>
             </div>
             <div class="modal-footer">
-                <button onclick="closeEditModal()" class="btn btn-secondary mr-2">Dismiss</button>
-                <button onclick="updateProfile()" id="saveBtn" class="btn btn-primary px-8">Update Profile</button>
+                <button onclick="closeEditModal()" class="btn-dismiss">Dismiss</button>
+                <button onclick="updateProfile()" id="saveBtn" class="btn-update">Update Profile</button>
             </div>
         </div>
     </div>
@@ -363,9 +429,7 @@
 
         window.onclick = function(event) {
             const modal = document.getElementById("editModal");
-            if (event.target == modal) {
-                closeEditModal();
-            }
+            if (event.target == modal) closeEditModal();
         }
 
         function setupUI() {
@@ -394,47 +458,38 @@
             try {
                 const res = await fetch(`/api/${userType}/profile/${userId}`);
                 const user = await res.json();
-
                 if (res.ok) {
                     document.getElementById("profileName").innerText = user.name;
                     document.getElementById("avatar").innerText = user.name.charAt(0).toUpperCase();
                     document.getElementById("displayEmail").innerText = user.email;
                     document.getElementById("displayPhone").innerText = user.phone || "Not Provided";
-                    
                     if (userType === "student") {
                         document.getElementById("displayRoll").innerText = user.rollNumber;
                         document.getElementById("displayDept").innerText = user.department || "N/A";
                         document.getElementById("displayYear").innerText = user.year || "N/A";
                     }
-
                     document.getElementById("editName").value = user.name;
                     document.getElementById("editPhone").value = user.phone || "";
                 }
-            } catch (err) {
-                console.error(err);
-            }
+            } catch (err) { console.error(err); }
         }
 
         async function updateProfile() {
             const name = document.getElementById("editName").value;
             const phone = document.getElementById("editPhone").value;
             const btn = document.getElementById("saveBtn");
-
             if (!name) {
                 showMessage("Display Name is required", "error");
                 return;
             }
-
             btn.disabled = true;
             btn.innerText = "Updating...";
-
             try {
                 const res = await fetch(`/api/${userType}/profile/${userId}`, {
                     method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name, phone })
                 });
-
                 if (res.ok) {
                     showMessage("Successfully saved!", "success");
                     document.getElementById("profileName").innerText = name;
@@ -445,12 +500,8 @@
                     const data = await res.json();
                     showMessage(data.message || "Update error", "error");
                 }
-            } catch (err) {
-                showMessage("Network error", "error");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Update Profile";
-            }
+            } catch (err) { showMessage("Network error", "error"); }
+            finally { btn.disabled = false; btn.innerText = "Update Profile"; }
         }
 
         function showMessage(text, type) {
@@ -458,7 +509,6 @@
             msgDiv.className = `alert alert-${type} mt-4`;
             msgDiv.style.display = "block";
             msgDiv.innerText = text;
-
             if (type === "error") {
                 msgDiv.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
                 msgDiv.style.color = "#ef4444";
@@ -470,10 +520,7 @@
             }
         }
 
-        function logout() {
-            localStorage.clear();
-            window.location.href = "index.html";
-        }
+        function logout() { localStorage.clear(); window.location.href = "index.html"; }
 
         setupUI();
         loadProfile();
