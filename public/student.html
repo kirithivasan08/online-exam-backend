@@ -28,22 +28,23 @@
         </div>
     </nav>
 
-    <div class="container">
-        <div class="flex justify-between items-start mb-6 border-b pb-4 dark:border-zinc-700">
+    <div class="container py-6">
+        <div class="flex justify-between items-center mb-8 pb-6 border-b dark:border-zinc-700">
             <div>
-                <h2 class="m-0 text-2xl flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        class="text-violet-500">
+                <h2 class="m-0 text-3xl font-extrabold flex items-center gap-3" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="text-primary">
                         <path d="M12 2v20"></path>
                         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                     </svg>
                     Student Dashboard
                 </h2>
-                <p class="text-sm text-muted mt-1">Select an exam to begin an attempt.</p>
+                <p class="text-sm text-muted mt-2">Welcome back, <span id="welcomeName" class="font-semibold text-primary">Student</span>! Select an exam to begin.</p>
             </div>
-            <button class="btn btn-secondary btn-sm" onclick="window.location.href='result.html'">View My
-                Results</button>
+            <div class="flex gap-3">
+                <button class="btn btn-secondary btn-sm px-4" onclick="window.location.href='result.html'">My Reports</button>
+            </div>
         </div>
 
         <div id="examList" class="exam-grid">
@@ -57,6 +58,9 @@
         if (!studentId) {
             window.location.href = "login.html";
         }
+
+        // Set personalized welcome
+        document.getElementById("welcomeName").innerText = localStorage.getItem("studentName") || "Student";
 
         async function loadExams() {
             try {

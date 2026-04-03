@@ -13,26 +13,31 @@
 <body class="bg-gray-50 theme-student">
 
     <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">My Results</div>
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; margin-bottom: 0;">
+            <div class="nav-brand" style="font-family: 'Plus Jakarta Sans', sans-serif;">Student Portal</div>
             <div class="nav-links items-center">
-                <label class="toggle-switch">
+                <a href="student.html" class="font-medium hover:text-primary transition-colors">Dashboard</a>
+                <a href="profile.html" class="font-medium hover:text-primary transition-colors">My Profile</a>
+                <label class="toggle-switch m-0" style="margin-top: 0; margin-bottom: 0;">
                     <input type="checkbox" class="toggle-input theme-toggle-input">
                     <span class="toggle-slider"></span>
-                    <span class="toggle-label text-sm">Dark Mode</span>
                 </label>
-                <a href="student.html">Dashboard</a>
-                <a href="profile.html">My Profile</a>
-                <a href="#" onclick="logout()">Logout</a>
+                <button onclick="logout()" class="btn btn-ghost text-sm font-semibold">Logout</button>
             </div>
         </div>
     </nav>
 
-    <div class="container">
-        <div class="card" style="max-width: 1000px; margin: 0 auto;">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="mb-0">My Exam Results</h2>
-                <button class="btn btn-danger btn-sm" onclick="clearHistory()">Clear History</button>
+    <div class="container py-8">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-end mb-10 pb-6 border-b dark:border-zinc-700">
+                <div>
+                    <h1 class="m-0 text-3xl font-extrabold flex items-center gap-3" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-violet-500"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14.5 2 14.5 8 20 8"></polyline><path d="M12 18v-4"></path><path d="M8 18v-2"></path><path d="M16 18v-6"></path></svg>
+                        Detailed Reports
+                    </h1>
+                    <p class="text-sm text-muted mt-2">Download official scorecards and view in-depth performance analytics.</p>
+                </div>
+                <button class="btn btn-danger btn-sm px-4" onclick="clearHistory()">Clear All Records</button>
             </div>
 
             <div class="table-container">

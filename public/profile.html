@@ -2,82 +2,194 @@
 <html>
 
 <head>
-    <title>My Profile</title>
+    <title>My Profile | Online Exam System</title>
     <link rel="stylesheet" href="style.css">
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap"
         rel="stylesheet">
     <script src="theme.js"></script>
+    <style>
+        .profile-banner {
+            height: 200px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #db2777 100%);
+            position: relative;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            margin-top: -60px;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .avatar-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--surface);
+            padding: 5px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            background: var(--surface);
+            height: 100%;
+        }
+
+        .field-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .field-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .section-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .edit-section {
+            background: var(--surface-hover);
+            border-radius: var(--radius);
+            padding: 2rem;
+            border: 1px dashed var(--border);
+        }
+
+        [data-theme="dark"] .avatar-circle {
+            background: var(--surface);
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50 flex flex-col min-height-screen" style="min-height: 100vh;">
+<body class="bg-gray-50 flex flex-col min-h-screen mesh-gradient">
 
     <nav class="navbar" id="mainNav">
-        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="nav-brand font-bold text-xl" id="navBrand">Portal</div>
-            <div class="nav-links flex items-center gap-4">
-                <label class="toggle-switch m-0">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; margin-bottom: 0;">
+            <div class="nav-brand font-bold text-xl" style="font-family: 'Plus Jakarta Sans', sans-serif;" id="navBrand">Portal</div>
+            <div class="nav-links flex items-center gap-6">
+                <a href="#" id="homeLink" class="font-medium hover:text-primary transition-colors">Dashboard</a>
+                <label class="toggle-switch">
                     <input type="checkbox" class="toggle-input theme-toggle-input">
                     <span class="toggle-slider"></span>
-                    <span class="toggle-label text-sm">Dark Mode</span>
                 </label>
-                <a href="#" id="homeLink" class="hover:text-indigo-600">Dashboard</a>
-                <a href="#" onclick="logout()" class="hover:text-indigo-600">Logout</a>
+                <button onclick="logout()" class="btn btn-ghost text-sm font-semibold">Logout</button>
             </div>
         </div>
     </nav>
 
-    <div class="flex-grow flex items-center justify-center py-12">
-        <div class="container" style="max-width: 800px;">
-            <div class="card p-0 overflow-hidden shadow-xl" style="background: var(--surface);">
-                <div class="h-32 bg-indigo-600" id="profileBanner" style="height: 120px;"></div>
-                <div class="px-8 pb-8 -mt-12" style="position: relative;">
-                    <div class="flex flex-col items-center">
-                        <div id="avatar" class="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-800 bg-indigo-500 text-white flex items-center justify-center text-3xl font-bold shadow-lg mb-4" style="width: 96px; height: 96px; border: 4px solid var(--surface); margin-top: -48px;">
-                            U
+    <div class="container py-8" style="max-width: 900px;">
+        <div class="card p-0 shadow-2xl overflow-visible">
+            <div class="profile-banner vibrant-gradient"></div>
+            
+            <div class="avatar-wrapper">
+                <div class="avatar-circle">
+                    <div id="avatar" class="avatar-inner">U</div>
+                </div>
+            </div>
+
+            <div class="px-8 pb-10 pt-4 text-center">
+                <h1 id="profileName" class="text-3xl font-extrabold m-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">User Name</h1>
+                <div class="flex justify-center mt-2">
+                    <span id="roleBadge" class="badge">Student</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 text-left">
+                    <!-- Personal Info Card -->
+                    <div class="info-card">
+                        <h3 class="section-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            Personal Info
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="field-label">Email Address</label>
+                                <div id="displayEmail" class="field-value">loading...</div>
+                            </div>
+                            <div id="rollGroup">
+                                <label class="field-label">Roll Number</label>
+                                <div id="displayRoll" class="field-value">loading...</div>
+                            </div>
                         </div>
-                        <h2 id="profileName" class="text-2xl font-bold m-0 text-center">User Name</h2>
-                        <span id="roleBadge" class="badge mt-2">Student</span>
                     </div>
 
-                    <div class="mt-8 space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-group mb-0">
-                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Email Address</label>
-                                <div id="displayEmail" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
+                    <!-- Academic/Account Details Card -->
+                    <div class="info-card">
+                        <h3 class="section-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-secondary"><path d="m12 3 10 4.5V19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7.5L12 3Z"></path><polyline points="2 7.5 12 12 22 7.5"></polyline><line x1="12" y1="12" x2="12" y2="21"></line></svg>
+                            Academic Info
+                        </h3>
+                        <div class="space-y-4">
+                            <div id="deptDisplayGroup">
+                                <label class="field-label">Department</label>
+                                <div id="displayDept" class="field-value">loading...</div>
                             </div>
-                            <div class="form-group mb-0" id="rollGroup">
-                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Roll Number</label>
-                                <div id="displayRoll" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="eduGroup">
-                            <div class="form-group mb-0">
-                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Department</label>
-                                <div id="displayDept" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
-                            </div>
-                            <div class="form-group mb-0">
-                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Year</label>
-                                <div id="displayYear" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
+                            <div id="yearDisplayGroup">
+                                <label class="field-label">Year of Study</label>
+                                <div id="displayYear" class="field-value">loading...</div>
                             </div>
                         </div>
+                    </div>
+                </div>
 
-                        <hr class="border-t dark:border-zinc-700 my-6">
-
-                        <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-500 mb-4">Edit Details</h3>
+                <!-- Edit Section -->
+                <div class="mt-8 text-left">
+                    <div class="edit-section">
+                        <h3 class="section-title" style="margin-bottom: 1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-500"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            Refresh My Profile
+                        </h3>
+                        <p class="text-sm text-muted mb-6">Update your display name and contact information below.</p>
                         
-                        <div class="form-group">
-                            <label class="form-label">Update Name</label>
-                            <input type="text" id="editName" class="form-input" placeholder="Your full name" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label class="form-label">Display Name</label>
+                                <input type="text" id="editName" class="form-input" placeholder="Your full name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" id="editPhone" class="form-input" placeholder="Enter mobile number">
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Phone Number</label>
-                            <input type="text" id="editPhone" class="form-input" placeholder="Enter your mobile number" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+                        <div class="flex justify-end mt-4">
+                            <button class="btn btn-primary px-10" onclick="updateProfile()">Save Changes</button>
                         </div>
-
-                        <button class="btn btn-primary w-full mt-4" style="width: 100%" onclick="updateProfile()">Save Changes</button>
                         <div id="msg" class="alert mt-4" style="display: none;"></div>
                     </div>
                 </div>
@@ -103,24 +215,22 @@
             const navBrand = document.getElementById("navBrand");
             const homeLink = document.getElementById("homeLink");
             const roleBadge = document.getElementById("roleBadge");
-            const banner = document.getElementById("profileBanner");
 
             if (userType === "student") {
                 navBrand.innerText = "Student Portal";
                 homeLink.href = "student.html";
-                roleBadge.innerText = "Student";
-                roleBadge.className = "badge badge-blue mt-2";
-                banner.style.backgroundColor = "var(--primary)";
+                roleBadge.innerText = "Verified Student";
+                roleBadge.className = "badge badge-blue";
             } else {
                 navBrand.innerText = "Teacher Portal";
                 homeLink.href = "teacher.html";
-                roleBadge.innerText = "Teacher";
-                roleBadge.className = "badge badge-emerald mt-2";
-                banner.style.backgroundColor = "var(--success)";
+                roleBadge.innerText = "Academic Instructor";
+                roleBadge.className = "badge badge-green";
                 
                 // Hide student-only fields
                 document.getElementById("rollGroup").style.display = "none";
-                document.getElementById("eduGroup").style.display = "none";
+                document.getElementById("deptDisplayGroup").style.display = "none";
+                document.getElementById("yearDisplayGroup").style.display = "none";
             }
         }
 
@@ -166,7 +276,7 @@
             }
 
             btn.disabled = true;
-            btn.innerText = "Saving...";
+            btn.innerText = "Saving Changes...";
 
             try {
                 const res = await fetch(`/api/${userType}/profile/${userId}`, {
@@ -180,6 +290,7 @@
                     showMessage("Profile updated successfully!", "success");
                     document.getElementById("profileName").innerText = name;
                     document.getElementById("avatar").innerText = name.charAt(0).toUpperCase();
+                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                 } else {
                     showMessage(data.message || "Failed to update profile", "error");
                 }
