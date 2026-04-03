@@ -10,17 +10,25 @@
     <script src="theme.js"></script>
 </head>
 
-<body class="theme-student">
-    <div style="position: absolute; top: 1rem; right: 2rem;">
-        <label class="toggle-switch">
-            <input type="checkbox" class="toggle-input theme-toggle-input">
-            <span class="toggle-slider"></span>
-            <span class="toggle-label text-sm" style="color: var(--text)">Dark Mode</span>
-        </label>
-    </div>
+<body class="theme-student" style="display: flex; flex-direction: column; min-height: 100vh;">
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="nav-brand font-bold text-xl">Online Exam System</div>
+            <div class="nav-links flex items-center gap-4">
+                <label class="toggle-switch m-0" style="margin-top: 0; margin-bottom: 0;">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label text-sm">Dark Mode</span>
+                </label>
+                <a href="index.html" class="hover:text-indigo-600">Home</a>
+                <a href="login.html" class="hover:text-indigo-600">Student Login</a>
+            </div>
+        </div>
+    </nav>
 
-    <div class="auth-container">
-        <div class="card">
+    <div class="flex-grow flex items-center justify-center">
+        <div class="auth-container" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <div class="card">
             <h2 class="text-center mb-4">Student Registration</h2>
 
             <div class="form-group">
@@ -79,6 +87,7 @@
 
             <div id="msg" class="alert mt-4"></div>
         </div>
+        </div>
     </div>
 
     <script>
@@ -133,6 +142,17 @@
         function showMessage(text, type) {
             const msgDiv = document.getElementById("msg");
             msgDiv.className = `alert alert-${type} mt-4`;
+            
+            if (type === "error") {
+                msgDiv.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+                msgDiv.style.color = "#ef4444";
+                msgDiv.style.border = "1px solid #ef4444";
+            } else if (type === "success") {
+                msgDiv.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+                msgDiv.style.color = "#10b981";
+                msgDiv.style.border = "1px solid #10b981";
+            }
+            
             msgDiv.style.display = "block";
             msgDiv.innerText = text;
         }

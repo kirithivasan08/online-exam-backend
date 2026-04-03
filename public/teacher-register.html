@@ -10,15 +10,24 @@
     <script src="theme.js"></script>
 </head>
 
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div style="position: absolute; top: 1rem; right: 2rem;">
-        <label class="toggle-switch">
-            <input type="checkbox" class="toggle-input theme-toggle-input">
-            <span class="toggle-slider"></span>
-            <span class="toggle-label text-sm" style="color: var(--text)">Dark Mode</span>
-        </label>
-    </div>
-    <div class="auth-container card">
+<body class="theme-teacher" style="display: flex; flex-direction: column; min-height: 100vh;">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="nav-brand font-bold text-xl">Online Exam System</div>
+            <div class="nav-links flex items-center gap-4">
+                <label class="toggle-switch m-0" style="margin-top: 0; margin-bottom: 0;">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label text-sm">Dark Mode</span>
+                </label>
+                <a href="index.html" class="hover:text-emerald-600">Home</a>
+                <a href="teacher-login.html" class="hover:text-emerald-600">Teacher Portal</a>
+            </div>
+        </div>
+    </nav>
+    <div class="flex-grow flex items-center justify-center">
+        <div class="auth-container card" style="margin-top: 2rem; margin-bottom: 2rem;">
         <h2 class="text-center mb-4">Register as Teacher</h2>
 
         <div class="form-group">
@@ -41,6 +50,7 @@
         <div class="text-center text-sm">
             Already have an account? <a href="teacher-login.html">Login here</a>
         </div>
+    </div>
     </div>
 
     <script>
