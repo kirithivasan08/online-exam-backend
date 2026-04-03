@@ -16,6 +16,32 @@
             border-radius: var(--radius) var(--radius) 0 0;
         }
 
+        .edit-profile-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        .edit-profile-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
         .avatar-wrapper {
             position: relative;
             margin-top: -60px;
@@ -54,6 +80,13 @@
             padding: 1.5rem;
             background: var(--surface);
             height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
         .field-label {
@@ -84,15 +117,83 @@
             gap: 0.75rem;
         }
 
-        .edit-section {
-            background: var(--surface-hover);
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            width: 100%;
+            max-width: 500px;
             border-radius: var(--radius);
-            padding: 2rem;
-            border: 1px dashed var(--border);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface-hover);
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: var(--surface-hover);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--danger);
         }
 
         [data-theme="dark"] .avatar-circle {
             background: var(--surface);
+        }
+        [data-theme="dark"] .close-modal:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
@@ -115,7 +216,12 @@
 
     <div class="container py-8" style="max-width: 900px;">
         <div class="card p-0 shadow-2xl overflow-visible">
-            <div class="profile-banner vibrant-gradient"></div>
+            <div class="profile-banner vibrant-gradient">
+                <button onclick="openEditModal()" class="edit-profile-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit Profile
+                </button>
+            </div>
             
             <div class="avatar-wrapper">
                 <div class="avatar-circle">
@@ -141,6 +247,10 @@
                                 <label class="field-label">Email Address</label>
                                 <div id="displayEmail" class="field-value">loading...</div>
                             </div>
+                            <div>
+                                <label class="field-label">Mobile Number</label>
+                                <div id="displayPhone" class="field-value">Not Provided</div>
+                            </div>
                             <div id="rollGroup">
                                 <label class="field-label">Roll Number</label>
                                 <div id="displayRoll" class="field-value">loading...</div>
@@ -163,36 +273,49 @@
                                 <label class="field-label">Year of Study</label>
                                 <div id="displayYear" class="field-value">loading...</div>
                             </div>
+                            <div>
+                                <label class="field-label">Verification Status</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    <span class="text-xs font-bold text-emerald-600 uppercase">Verified Account</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Edit Section -->
-                <div class="mt-8 text-left">
-                    <div class="edit-section">
-                        <h3 class="section-title" style="margin-bottom: 1rem;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-500"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                            Refresh My Profile
-                        </h3>
-                        <p class="text-sm text-muted mb-6">Update your display name and contact information below.</p>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="form-group">
-                                <label class="form-label">Display Name</label>
-                                <input type="text" id="editName" class="form-input" placeholder="Your full name">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Phone Number</label>
-                                <input type="text" id="editPhone" class="form-input" placeholder="Enter mobile number">
-                            </div>
-                        </div>
-
-                        <div class="flex justify-end mt-4">
-                            <button class="btn btn-primary px-10" onclick="updateProfile()">Save Changes</button>
-                        </div>
-                        <div id="msg" class="alert mt-4" style="display: none;"></div>
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="m-0 font-bold" style="font-family: 'Plus Jakarta Sans', sans-serif;">Edit Your Profile</h3>
+                <button onclick="closeEditModal()" class="close-modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group mb-6">
+                    <label class="form-label">Full Name</label>
+                    <div style="position: relative;">
+                        <input type="text" id="editName" class="form-input" placeholder="Your full name" style="padding-left: 40px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label class="form-label">Mobile Number</label>
+                    <div style="position: relative;">
+                        <input type="text" id="editPhone" class="form-input" placeholder="Enter mobile number" style="padding-left: 40px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </div>
+                </div>
+                <div id="msg" class="alert mt-4" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeEditModal()" class="btn btn-secondary mr-2">Cancel</button>
+                <button onclick="updateProfile()" id="saveBtn" class="btn btn-primary px-8">Save Changes</button>
             </div>
         </div>
     </div>
@@ -207,11 +330,27 @@
             window.location.href = "index.html";
         }
 
-        // Configure UI based on user type
+        function openEditModal() {
+            document.getElementById("editModal").style.display = "flex";
+            document.body.style.overflow = "hidden"; // Prevent scrolling
+        }
+
+        function closeEditModal() {
+            document.getElementById("editModal").style.display = "none";
+            document.body.style.overflow = "auto";
+            document.getElementById("msg").style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById("editModal");
+            if (event.target == modal) {
+                closeEditModal();
+            }
+        }
+
         function setupUI() {
-            const body = document.body;
-            body.classList.add(`theme-${userType}`);
-            
+            document.body.classList.add(`theme-${userType}`);
             const navBrand = document.getElementById("navBrand");
             const homeLink = document.getElementById("homeLink");
             const roleBadge = document.getElementById("roleBadge");
@@ -226,8 +365,6 @@
                 homeLink.href = "teacher.html";
                 roleBadge.innerText = "Academic Instructor";
                 roleBadge.className = "badge badge-green";
-                
-                // Hide student-only fields
                 document.getElementById("rollGroup").style.display = "none";
                 document.getElementById("deptDisplayGroup").style.display = "none";
                 document.getElementById("yearDisplayGroup").style.display = "none";
@@ -240,12 +377,10 @@
                 const user = await res.json();
 
                 if (res.ok) {
-                    // Update header
                     document.getElementById("profileName").innerText = user.name;
                     document.getElementById("avatar").innerText = user.name.charAt(0).toUpperCase();
-
-                    // Update Display
                     document.getElementById("displayEmail").innerText = user.email;
+                    document.getElementById("displayPhone").innerText = user.phone || "Not Provided";
                     
                     if (userType === "student") {
                         document.getElementById("displayRoll").innerText = user.rollNumber;
@@ -253,22 +388,20 @@
                         document.getElementById("displayYear").innerText = user.year || "Not Specified";
                     }
 
-                    // Pre-fill Edit Fields
                     document.getElementById("editName").value = user.name;
                     document.getElementById("editPhone").value = user.phone || "";
                 } else {
-                    showMessage("Error fetching profile: " + (user.message || "Unknown error"), "error");
+                    alert("Error fetching profile: " + (user.message || "Unknown error"));
                 }
             } catch (err) {
                 console.error("Profile load failed", err);
-                showMessage("Failed to connect to server", "error");
             }
         }
 
         async function updateProfile() {
             const name = document.getElementById("editName").value;
             const phone = document.getElementById("editPhone").value;
-            const btn = document.querySelector("button[onclick='updateProfile()']");
+            const btn = document.getElementById("saveBtn");
 
             if (!name) {
                 showMessage("Name cannot be empty", "error");
@@ -276,7 +409,7 @@
             }
 
             btn.disabled = true;
-            btn.innerText = "Saving Changes...";
+            btn.innerText = "Saving...";
 
             try {
                 const res = await fetch(`/api/${userType}/profile/${userId}`, {
@@ -287,12 +420,16 @@
 
                 const data = await res.json();
                 if (res.ok) {
-                    showMessage("Profile updated successfully!", "success");
+                    showMessage("Profile updated!", "success");
+                    // Sync main view
                     document.getElementById("profileName").innerText = name;
+                    document.getElementById("displayPhone").innerText = phone || "Not Provided";
                     document.getElementById("avatar").innerText = name.charAt(0).toUpperCase();
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    
+                    // Close modal after delay
+                    setTimeout(closeEditModal, 1200);
                 } else {
-                    showMessage(data.message || "Failed to update profile", "error");
+                    showMessage(data.message || "Failed to update", "error");
                 }
             } catch (err) {
                 showMessage("Network error: " + err.message, "error");
@@ -320,9 +457,7 @@
         }
 
         function logout() {
-            localStorage.removeItem("studentId");
-            localStorage.removeItem("teacherId");
-            localStorage.removeItem("name");
+            localStorage.clear();
             window.location.href = "index.html";
         }
 
