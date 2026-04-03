@@ -1,48 +1,42 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 
-// Create a transporter
-// For Gmail: use 'service': 'gmail'
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports (like 587 STARTTLS)
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: (process.env.EMAIL_PASS || '').replace(/\s+/g, '') // Remove spaces if copied directly
-    },
-    connectionTimeout: 5000, // 5 seconds to prevent hanging
-    greetingTimeout: 5000,
-    socketTimeout: 5000
-});
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * Send an email
+ * Send an email using Resend
  * @param {string} to - Recipient email
  * @param {string} subject - Email subject
  * @param {string} html - HTML content of the email
  */
 const sendEmail = async ({ to, subject, html, text }) => {
-    // Check if credentials are set
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-        console.error("⚠️  Email configuration missing (EMAIL_USER/EMAIL_PASS). Email NOT sent.");
-        return;
+    // Check if API key is set
+    if (!process.env.RESEND_API_KEY) {
+        console.error("⚠️  Resend API Key missing in environment variables. Email NOT sent.");
+        return undefined;
     }
 
-    console.log(`📧 Preparing to send email to: ${to}`);
+    console.log(`📧 Preparing to send email via Resend to: ${to}`);
 
     try {
-        const info = await transporter.sendMail({
-            from: `"Online Exam System" <${process.env.EMAIL_USER}>`,
+        const { data, error } = await resend.emails.send({
+            from: "onboarding@resend.dev", // Free-tier default sending email for Resend
             to,
             subject,
             html,
-            text // ✅ Auto-generate from HTML if missing, or use provided
         });
-        console.log("✅ Email sent: %s", info.messageId);
-        return info;
+
+        if (error) {
+            console.error("❌ Error sending email via Resend:", error);
+            return undefined; // Return undefined so fallback kicks in
+        }
+
+        console.log("✅ Email sent successfully via Resend: %s", data.id);
+        return data;
     } catch (error) {
-        console.error("❌ Error sending email:", error);
-        // Don't throw, just log. We don't want to break the app flow if email fails.
+        console.error("❌ Exception when calling Resend API:", error);
+        // Don't throw, return undefined so fallback kicks in
+        return undefined;
     }
 };
 
