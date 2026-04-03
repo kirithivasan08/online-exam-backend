@@ -6,11 +6,11 @@ const sendEmail = require("../utils/emailService");
 
 // Teacher Register
 routes.post("/register", async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
     try {
-        let teacher = await Teacher.findOne({ email });
+        let teacher = await Teacher.findOne({ $or: [{ email }, { phone }] });
         if (teacher) {
-            return res.status(400).json({ message: "Teacher already exists" });
+            return res.status(400).json({ message: "Teacher with this email or phone already exists" });
         }
 
         // Generate a random token
@@ -20,6 +20,7 @@ routes.post("/register", async (req, res) => {
             name,
             email,
             password,
+            phone,
             isVerified: false,
             verificationToken
         });
@@ -84,11 +85,16 @@ routes.get("/verify/:token", async (req, res) => {
     }
 });
 
-// Teacher Login
+// Teacher Login (Flexible: Email or Phone)
 routes.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body;
     try {
-        const teacher = await Teacher.findOne({ email });
+        const teacher = await Teacher.findOne({ 
+            $or: [
+                { email: identifier },
+                { phone: identifier }
+            ]
+        });
         if (!teacher) {
             return res.status(400).json({ message: "Teacher not found" });
         }
@@ -105,6 +111,32 @@ routes.post("/login", async (req, res) => {
             teacherId: teacher._id,
             name: teacher.name
         });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET Teacher Profile
+routes.get("/profile/:id", async (req, res) => {
+    try {
+        const teacher = await Teacher.findById(req.params.id).select("-password");
+        if (!teacher) return res.status(404).json({ message: "Teacher not found" });
+        res.json(teacher);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// UPDATE Teacher Profile
+routes.put("/profile/:id", async (req, res) => {
+    try {
+        const { name, phone } = req.body;
+        const teacher = await Teacher.findByIdAndUpdate(
+            req.params.id,
+            { name, phone },
+            { new: true }
+        ).select("-password");
+        res.json({ message: "Profile updated successfully", teacher });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

@@ -22,25 +22,46 @@ router.get("/all", async (req, res) => {
 
         let query = {};
 
+        const now = new Date();
+
         if (teacherId) {
-            // Teacher gets to see all exams, no assignment filtering needed
+            // Teacher gets to see all exams
             query = {};
-        } else if (studentId && mongoose.Types.ObjectId.isValid(studentId)) {
-            const objectId = new mongoose.Types.ObjectId(studentId);
-            // Only fetch exams if assignedTo is empty OR studentId is in the assignedTo array
+        } else {
+            // Student or public view: Filter by assignment AND scheduling
+            const assignmentQuery = studentId && mongoose.Types.ObjectId.isValid(studentId) 
+                ? {
+                    $or: [
+                        { assignedTo: { $exists: false } },
+                        { assignedTo: { $size: 0 } },
+                        { assignedTo: new mongoose.Types.ObjectId(studentId) }
+                    ]
+                  }
+                : {
+                    $or: [
+                        { assignedTo: { $exists: false } },
+                        { assignedTo: { $size: 0 } }
+                    ]
+                  };
+
+            // Combine with Date scheduling
             query = {
-                $or: [
-                    { assignedTo: { $exists: false } },
-                    { assignedTo: { $size: 0 } },
-                    { assignedTo: objectId }
-                ]
-            };
-        } else if (studentId === "null" || studentId === "undefined" || !studentId) {
-            // If they aren't logged in right, only show them fully public exams
-            query = {
-                $or: [
-                    { assignedTo: { $exists: false } },
-                    { assignedTo: { $size: 0 } }
+                $and: [
+                    assignmentQuery,
+                    {
+                        $or: [
+                            { startDate: { $exists: false } },
+                            { startDate: null },
+                            { startDate: { $lte: now } }
+                        ]
+                    },
+                    {
+                        $or: [
+                            { endDate: { $exists: false } },
+                            { endDate: null },
+                            { endDate: { $gte: now } }
+                        ]
+                    }
                 ]
             };
         }

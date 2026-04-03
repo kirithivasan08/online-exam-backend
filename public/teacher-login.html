@@ -31,8 +31,8 @@
         <h2 class="text-center mb-4">Teacher Portal</h2>
 
         <div class="form-group">
-            <label class="form-label">Email Address</label>
-            <input type="email" id="email" placeholder="teacher@school.com">
+            <label class="form-label">Email or Phone Number</label>
+            <input type="text" id="identifier" placeholder="teacher@school.com or 10-digit phone">
         </div>
 
         <div class="form-group">
@@ -69,10 +69,10 @@
         });
 
         async function login() {
-            const email = document.getElementById("email").value;
+            const identifier = document.getElementById("identifier").value;
             const password = document.getElementById("password").value;
 
-            if (!email || !password) {
+            if (!identifier || !password) {
                 alert("Please fill all fields");
                 return;
             }
@@ -81,7 +81,7 @@
                 const res = await fetch("/api/teacher/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ identifier, password })
                 });
 
                 const data = await res.json();

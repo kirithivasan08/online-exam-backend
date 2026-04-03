@@ -36,8 +36,14 @@ router.post("/submit", async (req, res) => {
                 ans.selectedOption === question.correctAnswer
             ) {
                 totalMarks += question.marks;
+            } else if (question && exam.negativeMarking > 0) {
+                // If wrong answer and negative marking is enabled
+                totalMarks -= exam.negativeMarking;
             }
         });
+
+        // Ensure marks don't go below 0
+        totalMarks = Math.max(0, totalMarks);
 
         const status = requiresManualEval ? 'pending' : 'evaluated';
 

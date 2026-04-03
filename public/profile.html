@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Profile</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700&display=swap"
+        rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+
+<body class="bg-gray-50 flex flex-col min-height-screen" style="min-height: 100vh;">
+
+    <nav class="navbar" id="mainNav">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="nav-brand font-bold text-xl" id="navBrand">Portal</div>
+            <div class="nav-links flex items-center gap-4">
+                <label class="toggle-switch m-0">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label text-sm">Dark Mode</span>
+                </label>
+                <a href="#" id="homeLink" class="hover:text-indigo-600">Dashboard</a>
+                <a href="#" onclick="logout()" class="hover:text-indigo-600">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-grow flex items-center justify-center py-12">
+        <div class="container" style="max-width: 800px;">
+            <div class="card p-0 overflow-hidden shadow-xl" style="background: var(--surface);">
+                <div class="h-32 bg-indigo-600" id="profileBanner" style="height: 120px;"></div>
+                <div class="px-8 pb-8 -mt-12" style="position: relative;">
+                    <div class="flex flex-col items-center">
+                        <div id="avatar" class="w-24 h-24 rounded-full border-4 border-white dark:border-zinc-800 bg-indigo-500 text-white flex items-center justify-center text-3xl font-bold shadow-lg mb-4" style="width: 96px; height: 96px; border: 4px solid var(--surface); margin-top: -48px;">
+                            U
+                        </div>
+                        <h2 id="profileName" class="text-2xl font-bold m-0 text-center">User Name</h2>
+                        <span id="roleBadge" class="badge mt-2">Student</span>
+                    </div>
+
+                    <div class="mt-8 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-group mb-0">
+                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Email Address</label>
+                                <div id="displayEmail" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
+                            </div>
+                            <div class="form-group mb-0" id="rollGroup">
+                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Roll Number</label>
+                                <div id="displayRoll" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="eduGroup">
+                            <div class="form-group mb-0">
+                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Department</label>
+                                <div id="displayDept" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label class="form-label text-xs uppercase tracking-wider text-muted mb-1 block">Year</label>
+                                <div id="displayYear" class="p-3 bg-gray-100 dark:bg-zinc-800 rounded font-medium border border-transparent">loading...</div>
+                            </div>
+                        </div>
+
+                        <hr class="border-t dark:border-zinc-700 my-6">
+
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-indigo-500 mb-4">Edit Details</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Update Name</label>
+                            <input type="text" id="editName" class="form-input" placeholder="Your full name" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <input type="text" id="editPhone" class="form-input" placeholder="Enter your mobile number" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);">
+                        </div>
+
+                        <button class="btn btn-primary w-full mt-4" style="width: 100%" onclick="updateProfile()">Save Changes</button>
+                        <div id="msg" class="alert mt-4" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const studentId = localStorage.getItem("studentId");
+        const teacherId = localStorage.getItem("teacherId");
+        const userId = studentId || teacherId;
+        const userType = studentId ? "student" : "teacher";
+
+        if (!userId) {
+            window.location.href = "index.html";
+        }
+
+        // Configure UI based on user type
+        function setupUI() {
+            const body = document.body;
+            body.classList.add(`theme-${userType}`);
+            
+            const navBrand = document.getElementById("navBrand");
+            const homeLink = document.getElementById("homeLink");
+            const roleBadge = document.getElementById("roleBadge");
+            const banner = document.getElementById("profileBanner");
+
+            if (userType === "student") {
+                navBrand.innerText = "Student Portal";
+                homeLink.href = "student.html";
+                roleBadge.innerText = "Student";
+                roleBadge.className = "badge badge-blue mt-2";
+                banner.style.backgroundColor = "var(--primary)";
+            } else {
+                navBrand.innerText = "Teacher Portal";
+                homeLink.href = "teacher.html";
+                roleBadge.innerText = "Teacher";
+                roleBadge.className = "badge badge-emerald mt-2";
+                banner.style.backgroundColor = "var(--success)";
+                
+                // Hide student-only fields
+                document.getElementById("rollGroup").style.display = "none";
+                document.getElementById("eduGroup").style.display = "none";
+            }
+        }
+
+        async function loadProfile() {
+            try {
+                const res = await fetch(`/api/${userType}/profile/${userId}`);
+                const user = await res.json();
+
+                if (res.ok) {
+                    // Update header
+                    document.getElementById("profileName").innerText = user.name;
+                    document.getElementById("avatar").innerText = user.name.charAt(0).toUpperCase();
+
+                    // Update Display
+                    document.getElementById("displayEmail").innerText = user.email;
+                    
+                    if (userType === "student") {
+                        document.getElementById("displayRoll").innerText = user.rollNumber;
+                        document.getElementById("displayDept").innerText = user.department || "Not Specified";
+                        document.getElementById("displayYear").innerText = user.year || "Not Specified";
+                    }
+
+                    // Pre-fill Edit Fields
+                    document.getElementById("editName").value = user.name;
+                    document.getElementById("editPhone").value = user.phone || "";
+                } else {
+                    showMessage("Error fetching profile: " + (user.message || "Unknown error"), "error");
+                }
+            } catch (err) {
+                console.error("Profile load failed", err);
+                showMessage("Failed to connect to server", "error");
+            }
+        }
+
+        async function updateProfile() {
+            const name = document.getElementById("editName").value;
+            const phone = document.getElementById("editPhone").value;
+            const btn = document.querySelector("button[onclick='updateProfile()']");
+
+            if (!name) {
+                showMessage("Name cannot be empty", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Saving...";
+
+            try {
+                const res = await fetch(`/api/${userType}/profile/${userId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, phone })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage("Profile updated successfully!", "success");
+                    document.getElementById("profileName").innerText = name;
+                    document.getElementById("avatar").innerText = name.charAt(0).toUpperCase();
+                } else {
+                    showMessage(data.message || "Failed to update profile", "error");
+                }
+            } catch (err) {
+                showMessage("Network error: " + err.message, "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Save Changes";
+            }
+        }
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById("msg");
+            msgDiv.className = `alert alert-${type} mt-4`;
+            msgDiv.style.display = "block";
+            msgDiv.innerText = text;
+
+            if (type === "error") {
+                msgDiv.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+                msgDiv.style.color = "#ef4444";
+                msgDiv.style.border = "1px solid #ef4444";
+            } else {
+                msgDiv.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+                msgDiv.style.color = "#10b981";
+                msgDiv.style.border = "1px solid #10b981";
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("studentId");
+            localStorage.removeItem("teacherId");
+            localStorage.removeItem("name");
+            window.location.href = "index.html";
+        }
+
+        setupUI();
+        loadProfile();
+    </script>
+</body>
+
+</html>

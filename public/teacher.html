@@ -21,7 +21,8 @@
                     <span class="toggle-slider"></span>
                     <span class="toggle-label text-sm">Dark Mode</span>
                 </label>
-                <a href="#" onclick="logout()">Logout</a>
+                <a href="profile.html" class="hover:text-emerald-600">My Profile</a>
+                <a href="#" onclick="logout()" class="hover:text-emerald-600">Logout</a>
             </div>
         </div>
     </nav>
@@ -84,14 +85,28 @@
                         </svg>
                         Grading & Rules
                     </h3>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="grid grid-cols-3 gap-4 mb-4">
                         <div class="form-group mb-0">
-                            <label class="form-label">Duration (minutes)</label>
+                            <label class="form-label">Duration (min)</label>
                             <input type="number" id="duration" class="form-input" placeholder="e.g. 60">
                         </div>
                         <div class="form-group mb-0">
-                            <label class="form-label">Passing Marks</label>
+                            <label class="form-label">Pass Marks</label>
                             <input type="number" id="passMarks" class="form-input" placeholder="e.g. 40">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="form-label">Negative Marks</label>
+                            <input type="number" step="0.25" id="negativeMarking" class="form-input" placeholder="e.g. 0.25">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="form-group mb-0">
+                            <label class="form-label font-bold text-indigo-600">Start Date & Time</label>
+                            <input type="datetime-local" id="startDate" class="form-input">
+                        </div>
+                        <div class="form-group mb-0">
+                            <label class="form-label font-bold text-red-600">End Date & Time</label>
+                            <input type="datetime-local" id="endDate" class="form-input">
                         </div>
                     </div>
                     <label class="toggle-switch">
@@ -660,6 +675,9 @@
             document.getElementById("subject").value = "";
             document.getElementById("duration").value = "";
             document.getElementById("passMarks").value = "";
+            document.getElementById("negativeMarking").value = 0;
+            document.getElementById("startDate").value = "";
+            document.getElementById("endDate").value = "";
             document.getElementById("randomizeQuestions").checked = false;
 
             // Reset Anti-Cheating
@@ -697,6 +715,19 @@
                 document.getElementById("subject").value = exam.subject;
                 document.getElementById("duration").value = exam.duration;
                 document.getElementById("passMarks").value = exam.passMarks;
+                document.getElementById("negativeMarking").value = exam.negativeMarking || 0;
+                
+                if (exam.startDate) {
+                    const start = new Date(exam.startDate);
+                    start.setMinutes(start.getMinutes() - start.getTimezoneOffset());
+                    document.getElementById("startDate").value = start.toISOString().slice(0, 16);
+                }
+                if (exam.endDate) {
+                    const end = new Date(exam.endDate);
+                    end.setMinutes(end.getMinutes() - end.getTimezoneOffset());
+                    document.getElementById("endDate").value = end.toISOString().slice(0, 16);
+                }
+                
                 document.getElementById("randomizeQuestions").checked = exam.randomizeQuestions || false;
 
                 // Anti-Cheating
@@ -791,6 +822,9 @@
             const subject = document.getElementById("subject").value;
             const duration = document.getElementById("duration").value;
             const passMarks = parseInt(document.getElementById("passMarks").value) || 0;
+            const negativeMarking = parseFloat(document.getElementById("negativeMarking").value) || 0;
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
             const randomizeQuestions = document.getElementById("randomizeQuestions").checked;
 
             const qDivs = document.querySelectorAll("#questionsContainer > div");
@@ -845,12 +879,15 @@
                 subject,
                 duration,
                 passMarks,
-                totalMarks, // Send totalMarks explicitly
+                negativeMarking,
+                startDate: startDate || null,
+                endDate: endDate || null,
+                totalMarks,
                 randomizeQuestions,
                 enableAntiCheating: document.getElementById("enableAntiCheating").checked,
                 maxWarnings: parseInt(document.getElementById("maxWarnings").value) || 3,
                 questions,
-                assignedTo // Send specific students
+                assignedTo
             };
 
             const url = currentExamId ? `/api/exam/${currentExamId}` : "/api/exam/create";

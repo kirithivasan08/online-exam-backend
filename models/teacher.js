@@ -15,7 +15,8 @@ const teacherSchema = new mongoose.Schema({
         required: true
     },
     isVerified: { type: Boolean, default: false }, // ✅ New Field: Is email verified?
-    verificationToken: String // ✅ New Field: Secret code link
+    verificationToken: String, // ✅ New Field: Secret code link
+    phone: { type: String, unique: true } // ✅ New Field: Contact number
 });
 
 module.exports = mongoose.model("Teacher", teacherSchema);

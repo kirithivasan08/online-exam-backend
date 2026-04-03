@@ -6,11 +6,11 @@ const sendEmail = require("../utils/emailService");
 
 // Student Register
 routes.post("/register", async (req, res) => {
-    const { name, rollNumber, email, password, department, year } = req.body;
+    const { name, rollNumber, email, password, department, year, phone } = req.body;
     try {
-        let student = await Student.findOne({ $or: [{ email }, { rollNumber }] });
+        let student = await Student.findOne({ $or: [{ email }, { rollNumber }, { phone }] });
         if (student) {
-            return res.status(400).json({ message: "Student with this email or roll number already exists" });
+            return res.status(400).json({ message: "Student with this email, roll number, or phone already exists" });
         }
 
         // Generate a random token
@@ -23,6 +23,7 @@ routes.post("/register", async (req, res) => {
             password,
             department,
             year,
+            phone,
             isVerified: false,
             verificationToken
         });
@@ -87,11 +88,17 @@ routes.get("/verify/:token", async (req, res) => {
     }
 });
 
-// Student Login
+// Student Login (Flexible: Roll, Email, or Phone)
 routes.post("/login", async (req, res) => {
-    const { rollNumber, password } = req.body;
+    const { identifier, password } = req.body; // Use 'identifier' instead of 'rollNumber' for flexibility
     try {
-        const student = await Student.findOne({ rollNumber });
+        const student = await Student.findOne({ 
+            $or: [
+                { rollNumber: identifier },
+                { email: identifier },
+                { phone: identifier }
+            ]
+        });
         if (!student) {
             return res.status(400).json({ message: "Student not found" });
         }
@@ -120,6 +127,32 @@ routes.get("/all", async (req, res) => {
         // Exclude passwords
         const students = await Student.find({}, "-password");
         res.json(students);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET Student Profile
+routes.get("/profile/:id", async (req, res) => {
+    try {
+        const student = await Student.findById(req.params.id).select("-password");
+        if (!student) return res.status(404).json({ message: "Student not found" });
+        res.json(student);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// UPDATE Student Profile
+routes.put("/profile/:id", async (req, res) => {
+    try {
+        const { name, phone } = req.body;
+        const student = await Student.findByIdAndUpdate(
+            req.params.id,
+            { name, phone },
+            { new: true }
+        ).select("-password");
+        res.json({ message: "Profile updated successfully", student });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

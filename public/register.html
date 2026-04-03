@@ -46,6 +46,11 @@
                 <input type="email" id="email" placeholder="Enter your email">
             </div>
 
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="text" id="phone" placeholder="Enter your mobile number">
+            </div>
+
             <div class="form-group grid grid-cols-2 gap-4">
                 <div>
                     <label class="form-label">Department</label>
@@ -95,13 +100,14 @@
             const name = document.getElementById("name").value;
             const rollNumber = document.getElementById("roll").value;
             const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
             const department = document.getElementById("department").value;
             const year = document.getElementById("year").value;
             const password = document.getElementById("password").value;
             const btn = document.querySelector("button");
 
-            if (!name || !rollNumber || !email || !department || !year || !password) {
-                showMessage("Please fill in all fields including Department and Year", "error");
+            if (!name || !rollNumber || !email || !phone || !department || !year || !password) {
+                showMessage("Please fill in all fields including Phone, Department and Year", "error");
                 return;
             }
 
@@ -114,7 +120,7 @@
                 const res = await fetch("/api/student/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, rollNumber, email, department, year, password })
+                    body: JSON.stringify({ name, rollNumber, email, phone, department, year, password })
                 });
 
                 console.log("Response status:", res.status);

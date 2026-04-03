@@ -41,6 +41,11 @@
         </div>
 
         <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="text" id="phone" placeholder="Enter your mobile number">
+        </div>
+
+        <div class="form-group">
             <label class="form-label">Password</label>
             <input type="password" id="password" placeholder="********">
         </div>
@@ -57,10 +62,11 @@
         async function register() {
             const name = document.getElementById("name").value;
             const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
             const password = document.getElementById("password").value;
 
-            if (!name || !email || !password) {
-                alert("Please fill all fields");
+            if (!name || !email || !phone || !password) {
+                alert("Please fill all fields including Phone Number");
                 return;
             }
 
@@ -68,7 +74,7 @@
                 const res = await fetch("/api/teacher/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name, email, password })
+                    body: JSON.stringify({ name, email, phone, password })
                 });
 
                 const data = await res.json();

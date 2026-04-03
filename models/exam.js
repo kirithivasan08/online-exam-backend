@@ -53,7 +53,17 @@ const examSchema = new mongoose.Schema({
     assignedTo: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Student'
-    }]
+    }],
+    negativeMarking: {
+        type: Number,
+        default: 0
+    },
+    startDate: {
+        type: Date
+    },
+    endDate: {
+        type: Date
+    }
 });
 
 module.exports = mongoose.model("Exam", examSchema);
