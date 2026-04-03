@@ -20,7 +20,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
 
     try {
         const { data, error } = await resend.emails.send({
-            from: "onboarding@resend.dev", // Free-tier default sending email for Resend
+            from: "Examsphere <verify@send.examsphere.space>",
             to,
             subject,
             html,
