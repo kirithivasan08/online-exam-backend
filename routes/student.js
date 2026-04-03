@@ -40,11 +40,18 @@ routes.post("/register", async (req, res) => {
             </div>
         `;
 
-        await sendEmail({
+        const emailSentInfo = await sendEmail({
             to: email,
             subject: "Verify Your Student Account Email",
             html: emailHtml
         });
+
+        // Fallback: If email sending failed (e.g., Render blocked the connection), auto-verify so they aren't locked out.
+        if (!emailSentInfo) {
+            student.isVerified = true;
+            await student.save();
+            return res.json({ message: "Registration successful! (Email skipped due to server restrictions. Auto-verified)." });
+        }
 
         res.json({ message: "Registration successful! Please check your email to verify your account before logging in." });
     } catch (err) {
