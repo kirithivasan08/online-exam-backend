@@ -258,10 +258,17 @@ a:hover {
     grid-template-columns: repeat(2, 1fr);
 }
 
-/* Make grid responsive on mobile */
-@media (max-width: 768px) {
-    .grid-cols-2 {
-        grid-template-columns: 1fr;
+/* Proper responsive grid for wide screens */
+@media (min-width: 768px) {
+    .md-grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Keep stacked on small screens */
+@media (max-width: 767px) {
+    .md-grid-cols-2 {
+        grid-template-columns: 1fr !important;
     }
 }
 
