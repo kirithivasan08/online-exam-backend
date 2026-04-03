@@ -9,6 +9,7 @@ const teacherRoutes = require("./routes/teacher");
 const studentRoutes = require("./routes/student");
 const examRoutes = require("./routes/exam");
 const attemptRoutes = require("./routes/attempt");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 
@@ -50,9 +51,10 @@ app.get("/", (req, res) => {
 // API ROUTES
 // ======================
 app.use("/api/teacher", teacherRoutes);
-app.use("/api/student", studentRoutes);   // ✅ STUDENT LOGIN WORKS HERE
+app.use("/api/student", studentRoutes);
 app.use("/api/exam", examRoutes);
 app.use("/api/attempt", attemptRoutes);
+app.use("/api/admin", adminRoutes);
 
 // ======================
 // START SERVER

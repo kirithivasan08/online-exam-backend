@@ -4,7 +4,8 @@ const Teacher = require("../models/teacher");
 const crypto = require("crypto");
 const sendEmail = require("../utils/emailService");
 
-// Teacher Register
+// Teacher Register - DISABLED: Moved to Admin Panel
+/* 
 routes.post("/register", async (req, res) => {
     const { name, email, password, phone } = req.body;
     try {
@@ -65,6 +66,7 @@ routes.post("/register", async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+*/
 
 // Verify Email
 routes.get("/verify/:token", async (req, res) => {

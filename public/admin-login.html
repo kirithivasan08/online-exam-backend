@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Command Center | Online Exam System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen mesh-gradient">
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; margin-bottom: 0;">
+            <div class="nav-brand" style="font-family: 'Plus Jakarta Sans', sans-serif;">System Administration</div>
+            <div class="nav-links flex items-center gap-6">
+                <a href="index.html" class="font-medium hover:text-primary transition-colors">Public Home</a>
+                <label class="toggle-switch m-0">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+    </nav>
+
+    <div class="flex-grow flex items-center justify-center p-6">
+        <div class="auth-container card shadow-2xl p-8" style="max-width: 420px; border-radius: 24px;">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-600 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+                <h2 class="text-2xl font-extrabold m-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">Administrative Access</h2>
+                <p class="text-muted text-sm mt-2">Enter credentials to manage the platform infrastructure.</p>
+            </div>
+
+            <div class="form-group mb-6">
+                <label class="form-label" style="font-weight: 700;">Admin Username</label>
+                <div style="position: relative;">
+                    <input type="text" id="adminUser" class="form-input" placeholder="Enter username" style="padding-left: 44px; border-radius: 12px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+            </div>
+
+            <div class="form-group mb-8">
+                <label class="form-label" style="font-weight: 700;">Security Key</label>
+                <div style="position: relative;">
+                    <input type="password" id="adminPass" class="form-input" placeholder="••••••••" style="padding-left: 44px; border-radius: 12px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+            </div>
+
+            <button onclick="adminLogin()" id="loginBtn" class="btn btn-primary w-full py-4 text-base font-bold shadow-lg" style="border-radius: 14px;">Authorize Access</button>
+
+            <div id="msg" class="alert mt-6" style="display: none; border-radius: 12px; font-weight: 600;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function adminLogin() {
+            const username = document.getElementById("adminUser").value;
+            const password = document.getElementById("adminPass").value;
+            const btn = document.getElementById("loginBtn");
+            const msgDiv = document.getElementById("msg");
+
+            if (!username || !password) {
+                showMessage("Security credentials required.", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Authorizing...";
+
+            try {
+                const res = await fetch("/api/admin/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem("adminUser", username);
+                    localStorage.setItem("isAdmin", "true");
+                    showMessage("Access granted. Redirecting...", "success");
+                    setTimeout(() => window.location.href = "admin.html", 1000);
+                } else {
+                    showMessage(data.message || "Unauthorized access.", "error");
+                }
+            } catch (err) {
+                showMessage("Connection failure.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Authorize Access";
+            }
+        }
+
+        function showMessage(text, type) {
+            const msgDiv = document.getElementById("msg");
+            msgDiv.className = `alert alert-${type} mt-6`;
+            msgDiv.style.display = "block";
+            msgDiv.innerText = text;
+            
+            if (type === "error") {
+                msgDiv.style.backgroundColor = "rgba(239, 68, 68, 0.1)";
+                msgDiv.style.color = "#ef4444";
+                msgDiv.style.border = "1px solid #ef4444";
+            } else {
+                msgDiv.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+                msgDiv.style.color = "#10b981";
+                msgDiv.style.border = "1px solid #10b981";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Online Exam System</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="theme.js"></script>
+    <style>
+        .admin-stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+        .admin-stat-card i {
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 5rem;
+            opacity: 0.05;
+        }
+        .table-container {
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+        .admin-table th {
+            background: var(--surface-hover);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 1rem 1.5rem;
+        }
+        .admin-table td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-2xl);
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen mesh-gradient">
+    <nav class="navbar">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; margin-top: 0; margin-bottom: 0;">
+            <div class="nav-brand" style="font-family: 'Plus Jakarta Sans', sans-serif;">Admin Command Center</div>
+            <div class="nav-links flex items-center gap-6">
+                <label class="toggle-switch m-0">
+                    <input type="checkbox" class="toggle-input theme-toggle-input">
+                    <span class="toggle-slider"></span>
+                </label>
+                <button onclick="adminLogout()" class="btn btn-ghost text-sm font-bold">Safe Exit</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-8">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="admin-stat-card">
+                <div class="text-muted text-sm font-bold mb-1">Total Teachers</div>
+                <div id="teacherCount" class="text-4xl font-extrabold text-blue-600">--</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="text-muted text-sm font-bold mb-1">Total Students</div>
+                <div id="studentCount" class="text-4xl font-extrabold text-indigo-600">--</div>
+            </div>
+            <div class="admin-stat-card">
+                <div class="text-muted text-sm font-bold mb-1">Exams Created</div>
+                <div id="examCount" class="text-4xl font-extrabold text-violet-600">--</div>
+            </div>
+        </div>
+
+        <!-- Management Sections -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-extrabold m-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">Infrastructure Management</h2>
+            <button onclick="openTeacherModal()" class="btn btn-primary px-6 font-bold">+ Onboard New Teacher</button>
+        </div>
+
+        <!-- Teachers Table -->
+        <div class="card mb-12 p-0 overflow-hidden">
+            <div class="p-6 border-b dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="m-0 text-sm font-bold uppercase tracking-wider text-muted">Acasemic Instructors</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-zinc-50 dark:bg-zinc-800/30">
+                        <tr>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase">Instructor Details</th>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase">Contact</th>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase">Status</th>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherTableBody">
+                        <!-- Teachers populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Students Table -->
+        <div class="card p-0 overflow-hidden">
+            <div class="p-6 border-b dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="m-0 text-sm font-bold uppercase tracking-wider text-muted">Registered Students</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-zinc-50 dark:bg-zinc-800/30">
+                        <tr>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase">Student Details</th>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase">Roll Number</th>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase">Academic Context</th>
+                            <th class="px-6 py-4 text-xs font-bold text-muted uppercase text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- Students populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onboard Teacher Modal -->
+    <div id="teacherModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-extrabold m-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">Authorized Instructor Onboarding</h2>
+                <button onclick="closeTeacherModal()" class="text-muted hover:text-red-500 font-bold">×</button>
+            </div>
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label font-bold">Full Name</label>
+                    <input type="text" id="newName" class="form-input" placeholder="e.g. Dr. Emily Carter">
+                </div>
+                <div class="form-group">
+                    <label class="form-label font-bold">Official Email</label>
+                    <input type="email" id="newEmail" class="form-input" placeholder="emily@university.edu">
+                </div>
+                <div class="form-group">
+                    <label class="form-label font-bold">Mobile Connection</label>
+                    <input type="text" id="newPhone" class="form-input" placeholder="10-digit mobile number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label font-bold">Set Infrastructure Password</label>
+                    <input type="password" id="newPass" class="form-input" placeholder="Minimum 8 characters">
+                </div>
+                <button onclick="onboardTeacher()" id="onboardBtn" class="btn btn-primary w-full py-3 font-bold mt-4">Generate Secure Account</button>
+                <div id="modalMsg" class="alert mt-4" style="display: none; font-weight: 600;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Security Check
+        if (localStorage.getItem("isAdmin") !== "true") {
+            window.location.href = "admin-login.html";
+        }
+
+        async function loadDashboard() {
+            try {
+                // Load Stats
+                const statsRes = await fetch("/api/admin/stats");
+                const stats = await statsRes.json();
+                document.getElementById("teacherCount").innerText = stats.teachersCount;
+                document.getElementById("studentCount").innerText = stats.studentsCount;
+                document.getElementById("examCount").innerText = stats.examsCount;
+
+                // Load Teachers
+                const teachersRes = await fetch("/api/admin/teachers");
+                const teachers = await teachersRes.json();
+                const tBody = document.getElementById("teacherTableBody");
+                tBody.innerHTML = teachers.map(t => `
+                    <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-zinc-900 dark:text-white">${t.name}</div>
+                            <div class="text-xs text-muted">ID: ${t._id.slice(-8).toUpperCase()}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm">${t.email}</div>
+                            <div class="text-xs text-muted">${t.phone || 'N/A'}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            ${t.isVerified ? 
+                                '<span class="badge badge-green text-xs">Verified</span>' : 
+                                '<span class="badge badge-orange text-xs">Pending</span>'}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="deleteTeacher('${t._id}')" class="btn btn-danger btn-sm px-4">Terminate</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                // Load Students
+                const studentsRes = await fetch("/api/admin/students");
+                const students = await studentsRes.json();
+                const sBody = document.getElementById("studentTableBody");
+                sBody.innerHTML = students.map(s => `
+                    <tr class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-zinc-900 dark:text-white">${s.name}</div>
+                            <div class="text-xs text-muted">${s.email}</div>
+                        </td>
+                        <td class="px-6 py-4 font-mono text-sm text-indigo-600">${s.rollNumber}</td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium">${s.department || 'General'}</div>
+                            <div class="text-xs text-muted">${s.year || 'N/A'} Year</div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <button onclick="deleteStudent('${s._id}')" class="btn btn-danger btn-sm px-4">Deactivate</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                console.error("Dashboard failed to populate", err);
+            }
+        }
+
+        // Action Functions
+        async function onboardTeacher() {
+            const name = document.getElementById("newName").value;
+            const email = document.getElementById("newEmail").value;
+            const phone = document.getElementById("newPhone").value;
+            const password = document.getElementById("newPass").value;
+            const btn = document.getElementById("onboardBtn");
+
+            if (!name || !email || !phone || !password) {
+                showModalMessage("All credential fields mandatory.", "error");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "System Provisioning...";
+
+            try {
+                const res = await fetch("/api/admin/teachers/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, email, phone, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showModalMessage("Instructor onboarded successfully.", "success");
+                    loadDashboard();
+                    setTimeout(closeTeacherModal, 1500);
+                } else {
+                    showModalMessage(data.message || "Failed to create account.", "error");
+                }
+            } catch (err) {
+                showModalMessage("Infrastructure connection lost.", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Generate Secure Account";
+            }
+        }
+
+        async function deleteTeacher(id) {
+            if (!confirm("CRITICAL: This will terminate the instructor's access and delete all associated data. Proceed?")) return;
+            try {
+                const res = await fetch(`/api/admin/teachers/${id}`, { method: "DELETE" });
+                if (res.ok) loadDashboard();
+            } catch (err) { console.error(err); }
+        }
+
+        async function deleteStudent(id) {
+            if (!confirm("WARNING: Proceeding will deactivate the student account and remove their academic history.")) return;
+            try {
+                const res = await fetch(`/api/admin/students/${id}`, { method: "DELETE" });
+                if (res.ok) loadDashboard();
+            } catch (err) { console.error(err); }
+        }
+
+        // Utils
+        function openTeacherModal() {
+            document.getElementById("teacherModal").style.display = "flex";
+            document.body.style.overflow = "hidden";
+            document.getElementById("modalMsg").style.display = "none";
+        }
+        function closeTeacherModal() {
+            document.getElementById("teacherModal").style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+        function showModalMessage(text, type) {
+            const msg = document.getElementById("modalMsg");
+            msg.className = `alert alert-${type} mt-4`;
+            msg.style.display = "block";
+            msg.style.backgroundColor = type === "error" ? "rgba(239, 68, 68, 0.1)" : "rgba(16, 185, 129, 0.1)";
+            msg.style.color = type === "error" ? "#ef4444" : "#10b981";
+            msg.style.border = `1px solid ${type === "error" ? "#ef4444" : "#10b981"}`;
+            msg.innerText = text;
+        }
+        function adminLogout() {
+            localStorage.clear();
+            window.location.href = "index.html";
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>
