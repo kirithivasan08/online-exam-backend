@@ -63,6 +63,11 @@ const examSchema = new mongoose.Schema({
     },
     endDate: {
         type: Date
+    },
+    teacherId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Teacher',
+        required: true
     }
 });
 

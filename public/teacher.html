@@ -589,13 +589,19 @@
         // ------------------------------
 
         async function loadExams() {
-            const res = await fetch("/api/exam/all?teacherId=" + teacherId);
-            const exams = await res.json();
+            try {
+                const res = await fetch("/api/exam/all?teacherId=" + teacherId);
+                const exams = await res.json();
 
-            const list = document.getElementById("examList");
-            list.innerHTML = "";
+                const list = document.getElementById("examList");
+                list.innerHTML = "";
 
-            exams.forEach(exam => {
+                if (exams.length === 0) {
+                    list.innerHTML = '<div class="col-span-full text-center p-12 bg-white/50 dark:bg-black/20 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 transition-all hover:bg-white/80 dark:hover:bg-black/40"><p class="text-muted italic flex items-center justify-center gap-2 select-none"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-pulse"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>You haven\'t created any exams yet. Click "Create New Exam" to get started!</p></div>';
+                    return;
+                }
+
+                exams.forEach(exam => {
                 const div = document.createElement("div");
                 div.className = "exam-card";
                 div.innerHTML = `
@@ -640,12 +646,17 @@
                         </button>
                     </div>
                 `;
-                list.appendChild(div);
-            });
+                    list.appendChild(div);
+                });
+            } catch (err) {
+                console.error("Error loading exams:", err);
+            }
         }
 
         function showSection(id) {
-            document.getElementById("listSection").style.display = id === 'list' ? 'block' : 'none';
+            const listSection = document.getElementById("listSection");
+            if (listSection) listSection.style.display = id === 'list' ? 'block' : 'none';
+            
             document.getElementById("createSection").style.display = id === 'create' ? 'block' : 'none';
             document.getElementById("resultsSection").style.display = id === 'results' ? 'block' : 'none';
 
@@ -881,9 +892,10 @@
             }
 
             const payload = {
+                teacherId,
                 title,
                 subject,
-                duration,
+                duration: parseInt(duration),
                 passMarks,
                 negativeMarking,
                 startDate: startDate || null,
