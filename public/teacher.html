@@ -35,12 +35,13 @@
         </div>
 
         <!-- Manage Exams Section -->
+        <div id="listSection">
             <div class="flex justify-between items-end mb-8 border-b pb-6 dark:border-zinc-700">
                 <div>
                     <h2 class="m-0 text-3xl font-extrabold" style="font-family: 'Plus Jakarta Sans', sans-serif;">Manage Exams</h2>
                     <p class="text-sm text-muted mt-2 italic">Welcome back, <span id="welcomeName" class="font-bold text-emerald-600">Professor</span>! Manage your academic content below.</p>
                 </div>
-                <button class="btn btn-primary" onclick="showSection('create')">
+                <button class="btn btn-primary shadow-lg shadow-emerald-500/20" onclick="showSection('create')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="mr-2"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
                     Create New Exam
                 </button>
@@ -49,6 +50,7 @@
                 <!-- Exams loaded here -->
             </div>
         </div>
+    </div>
 
         <!-- Create Exam Section -->
         <div id="createSection" style="display:none;">
@@ -710,11 +712,16 @@
         }
 
         function showSection(id) {
+            // Jump to top for "Next Page" feel
+            window.scrollTo(0, 0);
+
             const listSection = document.getElementById("listSection");
+            const createSection = document.getElementById("createSection");
+            const resultsSection = document.getElementById("resultsSection");
+
             if (listSection) listSection.style.display = id === 'list' ? 'block' : 'none';
-            
-            document.getElementById("createSection").style.display = id === 'create' ? 'block' : 'none';
-            document.getElementById("resultsSection").style.display = id === 'results' ? 'block' : 'none';
+            if (createSection) createSection.style.display = id === 'create' ? 'block' : 'none';
+            if (resultsSection) resultsSection.style.display = id === 'results' ? 'block' : 'none';
 
             // Tab active states
             const tabList = document.getElementById("tab-list");
@@ -1006,8 +1013,8 @@
                 subject,
                 duration: parseInt(duration),
                 passMarks,
-                startDate: startDate || null,
-                endDate: endDate || null,
+                startDate: sISO,
+                endDate: eISO,
                 totalMarks,
                 randomizeQuestions,
                 enableAntiCheating: document.getElementById("enableAntiCheating").checked,
