@@ -927,6 +927,25 @@
         }
 
         async function createExam() {
+            // Helper to build ISO 12h/24h strings
+            const buildISO = (prefix) => {
+                const day = document.getElementById(`${prefix}_day`).value;
+                const hr = document.getElementById(`${prefix}_hr`).value;
+                const min = document.getElementById(`${prefix}_min`).value;
+                const ampm = document.getElementById(`${prefix}_ampm`).value;
+                
+                if (!day || hr === "" || min === "") return null;
+                
+                let h = parseInt(hr);
+                // Convert 12h to 24h
+                if (ampm === 'PM' && h < 12) h += 12;
+                if (ampm === 'AM' && h === 12) h = 0;
+                
+                const date = new Date(day);
+                date.setHours(h, parseInt(min), 0, 0);
+                return date.toISOString();
+            };
+
             const title = document.getElementById("title").value;
             const subject = document.getElementById("subject").value;
             
@@ -947,27 +966,6 @@
             }
             
             const passMarks = parseInt(document.getElementById("passMarks").value) || 0;
-            
-            // Manual Schedule Construction
-            const buildISO = (prefix) => {
-                const day = document.getElementById(`${prefix}_day`).value;
-                const hr = document.getElementById(`${prefix}_hr`).value;
-                const min = document.getElementById(`${prefix}_min`).value;
-                const ampm = document.getElementById(`${prefix}_ampm`).value;
-                
-                if (!day || hr === "" || min === "") return null;
-                
-                let h = parseInt(hr);
-                if (ampm === 'PM' && h < 12) h += 12;
-                if (ampm === 'AM' && h === 12) h = 0;
-                
-                const date = new Date(day);
-                date.setHours(h, parseInt(min), 0, 0);
-                return date.toISOString();
-            };
-
-            const startDate = buildISO('startDate');
-            const endDate = buildISO('endDate');
             const randomizeQuestions = document.getElementById("randomizeQuestions").checked;
 
             const qDivs = document.querySelectorAll("#questionsContainer > div");
