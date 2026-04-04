@@ -89,32 +89,44 @@
                             <circle cx="12" cy="12" r="10"></circle>
                             <polyline points="12 6 12 12 16 14"></polyline>
                         </svg>
-                        Grading & Rules
+                        Grading & Schedule
                     </h3>
-                    <div class="grid grid-cols-3 gap-4 mb-4">
+                    <div class="grid grid-cols-2 gap-6 mb-6">
                         <div class="form-group mb-0">
-                            <label class="form-label">Duration (min)</label>
+                            <label class="form-label flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                Duration (min)
+                            </label>
                             <input type="number" id="duration" class="form-input" placeholder="e.g. 60">
                         </div>
                         <div class="form-group mb-0">
-                            <label class="form-label">Pass Marks</label>
+                            <label class="form-label flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                Pass Marks
+                            </label>
                             <input type="number" id="passMarks" class="form-input" placeholder="e.g. 40">
                         </div>
-                        <div class="form-group mb-0">
-                            <label class="form-label">Negative Marks</label>
-                            <input type="number" step="0.25" id="negativeMarking" class="form-input" placeholder="e.g. 0.25">
+                    </div>
+
+                    <div class="bg-indigo-50/50 dark:bg-indigo-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800/50 mb-6">
+                        <div class="flex items-center gap-2 mb-4 text-indigo-700 dark:text-indigo-400 font-bold text-sm uppercase tracking-wider">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            Exam Availability Schedule
+                        </div>
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="form-group mb-0">
+                                <label class="form-label text-indigo-600 dark:text-indigo-400 font-semibold mb-2">Starts At (AM/PM)</label>
+                                <input type="datetime-local" id="startDate" class="form-input border-indigo-200 dark:border-indigo-800 focus:ring-indigo-500">
+                                <p class="text-[10px] text-indigo-500/70 mt-1 italic">Students can join from this time onwards.</p>
+                            </div>
+                            <div class="form-group mb-0">
+                                <label class="form-label text-red-600 dark:text-red-400 font-semibold mb-2">Closes At (AM/PM)</label>
+                                <input type="datetime-local" id="endDate" class="form-input border-red-200 dark:border-red-800 focus:ring-red-500">
+                                <p class="text-[10px] text-red-500/70 mt-1 italic">Access will be strictly blocked after this time.</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="form-group mb-0">
-                            <label class="form-label font-bold text-indigo-600">Start Date & Time</label>
-                            <input type="datetime-local" id="startDate" class="form-input">
-                        </div>
-                        <div class="form-group mb-0">
-                            <label class="form-label font-bold text-red-600">End Date & Time</label>
-                            <input type="datetime-local" id="endDate" class="form-input">
-                        </div>
-                    </div>
+
                     <label class="toggle-switch">
                         <input type="checkbox" id="randomizeQuestions" class="toggle-input">
                         <span class="toggle-slider"></span>
@@ -692,7 +704,6 @@
             document.getElementById("subject").value = "";
             document.getElementById("duration").value = "";
             document.getElementById("passMarks").value = "";
-            document.getElementById("negativeMarking").value = 0;
             document.getElementById("startDate").value = "";
             document.getElementById("endDate").value = "";
             document.getElementById("randomizeQuestions").checked = false;
@@ -732,7 +743,6 @@
                 document.getElementById("subject").value = exam.subject;
                 document.getElementById("duration").value = exam.duration;
                 document.getElementById("passMarks").value = exam.passMarks;
-                document.getElementById("negativeMarking").value = exam.negativeMarking || 0;
                 
                 if (exam.startDate) {
                     const start = new Date(exam.startDate);
@@ -839,7 +849,6 @@
             const subject = document.getElementById("subject").value;
             const duration = document.getElementById("duration").value;
             const passMarks = parseInt(document.getElementById("passMarks").value) || 0;
-            const negativeMarking = parseFloat(document.getElementById("negativeMarking").value) || 0;
             const startDate = document.getElementById("startDate").value;
             const endDate = document.getElementById("endDate").value;
             const randomizeQuestions = document.getElementById("randomizeQuestions").checked;
@@ -897,7 +906,6 @@
                 subject,
                 duration: parseInt(duration),
                 passMarks,
-                negativeMarking,
                 startDate: startDate || null,
                 endDate: endDate || null,
                 totalMarks,
