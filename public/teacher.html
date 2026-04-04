@@ -91,13 +91,26 @@
                         </svg>
                         Grading & Schedule
                     </h3>
-                    <div class="grid grid-cols-2 gap-6 mb-6">
+                    <div class="grid grid-cols-1 gap-6 mb-6">
                         <div class="form-group mb-0">
-                            <label class="form-label flex items-center gap-2">
+                            <label class="form-label flex items-center gap-2 mb-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                Duration (min)
+                                Time Duration (Manual)
                             </label>
-                            <input type="number" id="duration" class="form-input" placeholder="e.g. 60">
+                            <div class="grid grid-cols-3 gap-3">
+                                <div class="relative">
+                                    <input type="number" id="duration_hrs" class="form-input text-center" placeholder="Hrs" min="0">
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted font-bold opacity-50 uppercase tracking-tighter">Hrs</span>
+                                </div>
+                                <div class="relative">
+                                    <input type="number" id="duration_mins" class="form-input text-center" placeholder="Min" min="0" max="59">
+                                    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted font-bold opacity-50 uppercase tracking-tighter">Min</span>
+                                </div>
+                                <div class="relative">
+                                    <input type="number" id="duration_secs" class="form-input text-center" placeholder="Sec" min="0" max="59">
+                                    <span class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted font-bold opacity-50 uppercase tracking-tighter">Sec</span>
+                                </div>
+                            </div>
                         </div>
                         <div class="form-group mb-0">
                             <label class="form-label flex items-center gap-2">
@@ -113,16 +126,55 @@
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                             Exam Availability Schedule
                         </div>
-                        <div class="grid grid-cols-2 gap-6">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div class="form-group mb-0">
-                                <label class="form-label text-indigo-600 dark:text-indigo-400 font-semibold mb-2">Starts At (AM/PM)</label>
-                                <input type="datetime-local" id="startDate" class="form-input border-indigo-200 dark:border-indigo-800 focus:ring-indigo-500">
-                                <p class="text-[10px] text-indigo-500/70 mt-1 italic">Students can join from this time onwards.</p>
+                                <label class="form-label text-indigo-600 dark:text-indigo-400 font-bold border-b border-indigo-100 dark:border-indigo-800 pb-1 mb-3 block">Starts At (Manual Register)</label>
+                                <div class="space-y-3">
+                                    <input type="date" id="startDate_day" class="form-input border-indigo-200 dark:border-indigo-800">
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <select id="startDate_hr" class="form-input px-2 text-center font-bold">
+                                            <option value="">Hour</option>
+                                            ${Array.from({length:12}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
+                                        </select>
+                                        <select id="startDate_min" class="form-input px-2 text-center font-bold">
+                                            <option value="">Min</option>
+                                            ${Array.from({length:60}, (_, i) => `<option value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`).join('')}
+                                        </select>
+                                        <select id="startDate_ampm" class="form-input px-2 text-center font-bold text-indigo-600">
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-indigo-500/70 mt-2 italic flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                    Join limit starts precisely here.
+                                </p>
                             </div>
                             <div class="form-group mb-0">
-                                <label class="form-label text-red-600 dark:text-red-400 font-semibold mb-2">Closes At (AM/PM)</label>
-                                <input type="datetime-local" id="endDate" class="form-input border-red-200 dark:border-red-800 focus:ring-red-500">
-                                <p class="text-[10px] text-red-500/70 mt-1 italic">Access will be strictly blocked after this time.</p>
+                                <label class="form-label text-red-600 dark:text-red-400 font-bold border-b border-red-100 dark:border-red-900 pb-1 mb-3 block">Closes At (Manual Register)</label>
+                                <div class="space-y-3">
+                                    <input type="date" id="endDate_day" class="form-input border-red-200 dark:border-red-800">
+                                    <div class="grid grid-cols-3 gap-2">
+                                        <select id="endDate_hr" class="form-input px-2 text-center font-bold">
+                                            <option value="">Hour</option>
+                                            ${Array.from({length:12}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
+                                        </select>
+                                        <select id="endDate_min" class="form-input px-2 text-center font-bold">
+                                            <option value="">Min</option>
+                                            ${Array.from({length:60}, (_, i) => `<option value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`).join('')}
+                                        </select>
+                                        <select id="endDate_ampm" class="form-input px-2 text-center font-bold text-red-600">
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <p class="text-[10px] text-red-500/70 mt-2 italic flex items-center gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                    Access strictly terminated at this second.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -702,10 +754,25 @@
 
             document.getElementById("title").value = "";
             document.getElementById("subject").value = "";
-            document.getElementById("duration").value = "";
+            
+            // Reset Duration Fields
+            document.getElementById("duration_hrs").value = "";
+            document.getElementById("duration_mins").value = "";
+            document.getElementById("duration_secs").value = "";
+            
             document.getElementById("passMarks").value = "";
-            document.getElementById("startDate").value = "";
-            document.getElementById("endDate").value = "";
+            
+            // Reset Schedule Fields
+            document.getElementById("startDate_day").value = "";
+            document.getElementById("startDate_hr").value = "";
+            document.getElementById("startDate_min").value = "";
+            document.getElementById("startDate_ampm").value = "AM";
+            
+            document.getElementById("endDate_day").value = "";
+            document.getElementById("endDate_hr").value = "";
+            document.getElementById("endDate_min").value = "";
+            document.getElementById("endDate_ampm").value = "AM";
+            
             document.getElementById("randomizeQuestions").checked = false;
 
             // Reset Anti-Cheating
@@ -741,19 +808,35 @@
 
                 document.getElementById("title").value = exam.title;
                 document.getElementById("subject").value = exam.subject;
-                document.getElementById("duration").value = exam.duration;
+                
+                // Set Manual Duration
+                const totMins = exam.duration || 0;
+                const h = Math.floor(totMins / 60);
+                const m = Math.floor(totMins % 60);
+                const s = Math.round((totMins * 60) % 60);
+                document.getElementById("duration_hrs").value = h || "";
+                document.getElementById("duration_mins").value = m || "";
+                document.getElementById("duration_secs").value = s || "";
+                
                 document.getElementById("passMarks").value = exam.passMarks;
                 
-                if (exam.startDate) {
-                    const start = new Date(exam.startDate);
-                    start.setMinutes(start.getMinutes() - start.getTimezoneOffset());
-                    document.getElementById("startDate").value = start.toISOString().slice(0, 16);
-                }
-                if (exam.endDate) {
-                    const end = new Date(exam.endDate);
-                    end.setMinutes(end.getMinutes() - end.getTimezoneOffset());
-                    document.getElementById("endDate").value = end.toISOString().slice(0, 16);
-                }
+                // Helper to split ISO into manual fields
+                const splitTime = (iso, prefix) => {
+                    if (!iso) return;
+                    const date = new Date(iso);
+                    document.getElementById(`${prefix}_day`).value = iso.split('T')[0];
+                    let h = date.getHours();
+                    const m = date.getMinutes();
+                    const ampm = h >= 12 ? 'PM' : 'AM';
+                    h = h % 12;
+                    h = h ? h : 12; // hour 0 should be 12
+                    document.getElementById(`${prefix}_hr`).value = h;
+                    document.getElementById(`${prefix}_min`).value = m.toString().padStart(2, '0');
+                    document.getElementById(`${prefix}_ampm`).value = ampm;
+                };
+
+                splitTime(exam.startDate, 'startDate');
+                splitTime(exam.endDate, 'endDate');
                 
                 document.getElementById("randomizeQuestions").checked = exam.randomizeQuestions || false;
 
@@ -847,10 +930,35 @@
         async function createExam() {
             const title = document.getElementById("title").value;
             const subject = document.getElementById("subject").value;
-            const duration = document.getElementById("duration").value;
+            
+            // Calculate Manual Duration
+            const h = parseFloat(document.getElementById("duration_hrs").value) || 0;
+            const m = parseFloat(document.getElementById("duration_mins").value) || 0;
+            const s = parseFloat(document.getElementById("duration_secs").value) || 0;
+            const duration = h * 60 + m + (s / 60);
+
             const passMarks = parseInt(document.getElementById("passMarks").value) || 0;
-            const startDate = document.getElementById("startDate").value;
-            const endDate = document.getElementById("endDate").value;
+            
+            // Manual Schedule Construction
+            const buildISO = (prefix) => {
+                const day = document.getElementById(`${prefix}_day`).value;
+                const hr = document.getElementById(`${prefix}_hr`).value;
+                const min = document.getElementById(`${prefix}_min`).value;
+                const ampm = document.getElementById(`${prefix}_ampm`).value;
+                
+                if (!day || !hr || !min) return null;
+                
+                let h = parseInt(hr);
+                if (ampm === 'PM' && h < 12) h += 12;
+                if (ampm === 'AM' && h === 12) h = 0;
+                
+                const date = new Date(day);
+                date.setHours(h, parseInt(min), 0, 0);
+                return date.toISOString();
+            };
+
+            const startDate = buildISO('startDate');
+            const endDate = buildISO('endDate');
             const randomizeQuestions = document.getElementById("randomizeQuestions").checked;
 
             const qDivs = document.querySelectorAll("#questionsContainer > div");
