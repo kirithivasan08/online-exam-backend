@@ -407,10 +407,16 @@
     </div>
 
     <script>
+        const params = new URLSearchParams(window.location.search);
+        const forcedRole = params.get('role');
         const studentId = localStorage.getItem("studentId");
         const teacherId = localStorage.getItem("teacherId");
-        const userId = studentId || teacherId;
-        const userType = studentId ? "student" : "teacher";
+        
+        let userType = studentId ? "student" : "teacher";
+        if (forcedRole === 'teacher' && teacherId) userType = 'teacher';
+        if (forcedRole === 'student' && studentId) userType = 'student';
+        
+        const userId = (userType === "student") ? studentId : teacherId;
 
         if (!userId) {
             window.location.href = "index.html";
