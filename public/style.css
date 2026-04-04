@@ -1573,3 +1573,24 @@ table tr:hover td {
 [data-theme='dark'] .tab-btn.active.theme-student {
     box-shadow: 0 4px 14px 0 rgba(139, 92, 246, 0.39);
 }
+
+/* --- Admin Specific Theme Overrides --- */
+.theme-admin .btn-primary,
+.btn-primary.theme-admin {
+    --primary: #475569; /* Slate 600 */
+    --primary-hover: #334155; /* Slate 700 */
+}
+
+/* Dark Mode Admin Overrides */
+[data-theme='dark'] .theme-admin .btn-primary,
+[data-theme='dark'] .btn-primary.theme-admin {
+    --primary: #94a3b8; /* Slate 400 */
+    --primary-hover: #64748b; /* Slate 500 */
+    background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+    box-shadow: 0 4px 14px 0 rgba(148, 163, 184, 0.3);
+}
+
+[data-theme='dark'] .theme-admin .btn-primary:hover,
+[data-theme='dark'] .btn-primary.theme-admin:hover {
+    box-shadow: 0 6px 20px rgba(148, 163, 184, 0.4);
+}
