@@ -913,9 +913,22 @@
             const title = document.getElementById("title").value;
             const subject = document.getElementById("subject").value;
             
-            // Duration Removed (Infinite/Manual Control via Portal)
-            const duration = 999999; 
+            const sISO = buildISO('startDate');
+            const eISO = buildISO('endDate');
+            
+            if (!sISO || !eISO) {
+                Swal.fire('Error', 'Please set both Start and Close times.', 'error');
+                return;
+            }
 
+            // Calculate duration in minutes from the schedule
+            const duration = (new Date(eISO) - new Date(sISO)) / 60000;
+            
+            if (duration <= 0) {
+                Swal.fire('Error', 'Closing time must be after the starting time!', 'error');
+                return;
+            }
+            
             const passMarks = parseInt(document.getElementById("passMarks").value) || 0;
             
             // Manual Schedule Construction
