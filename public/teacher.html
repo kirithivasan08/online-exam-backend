@@ -680,11 +680,21 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2 mb-6">
-                        <div class="exam-meta-box">
-                            <span class="text-xs text-muted mb-1">Duration</span>
-                            <span class="font-bold text-sm flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                ${exam.duration}m
+                        <div class="exam-meta-box flex flex-col items-center justify-center text-center p-2 bg-gray-50 dark:bg-zinc-800/50 rounded-lg border border-gray-100 dark:border-zinc-700/50">
+                            <span class="text-[10px] text-muted uppercase font-bold tracking-widest mb-1 opacity-60">Duration</span>
+                            <span class="font-black text-sm flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>${(() => {
+                                    const durValue = parseFloat(exam.duration);
+                                    if (durValue >= 99999 || isNaN(durValue)) {
+                                        if (exam.startDate && exam.endDate) {
+                                            const diffMins = (new Date(exam.endDate) - new Date(exam.startDate)) / 60000;
+                                            return Math.max(1, Math.round(diffMins)) + 'm';
+                                        }
+                                        return 'Flex';
+                                    }
+                                    return Math.round(durValue) + 'm';
+                                })()}</span>
                             </span>
                         </div>
                         <div class="exam-meta-box">
